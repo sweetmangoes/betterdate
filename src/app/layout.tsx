@@ -1,17 +1,10 @@
-import Image from 'next/image'
-
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Main } from '@/components/elements/main'
-import { GitHubIcon } from '@/components/icons/social/github-icon'
-import { XIcon } from '@/components/icons/social/x-icon'
-import { YouTubeIcon } from '@/components/icons/social/youtube-icon'
 import {
   FooterCategory,
   FooterLink,
-  FooterWithNewsletterFormCategoriesAndSocialIcons,
-  NewsletterForm,
-  SocialLink,
-} from '@/components/sections/footer-with-newsletter-form-categories-and-social-icons'
+  FooterWithLinkCategories,
+} from '@/components/sections/footer-with-link-categories'
 import {
   NavbarLink,
   NavbarLogo,
@@ -21,7 +14,19 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Oatmeal Kit Demo',
+  title: 'Better Date — AI date plans for first dates and couples',
+  description:
+    'Take a short preference quiz and get a thoughtful local date plan — for first dates and couples who want intentional time together.',
+}
+
+function BetterDateMark({ className }: { className?: string }) {
+  return (
+    <span className={className}>
+      <span className="font-display text-xl font-medium tracking-tight text-mauve-950 dark:text-white">
+        Better Date
+      </span>
+    </span>
+  )
 }
 
 export default function RootLayout({
@@ -35,114 +40,58 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wdth,wght@0,112.5,200..900;1,112.5,200..900&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Figtree:ital,wght@0,400..700;1,400..700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body>
-        <>
-          <NavbarWithLinksActionsAndCenteredLogo
-            id="navbar"
-            links={
-              <>
-                <NavbarLink href="/pricing">Pricing</NavbarLink>
-                <NavbarLink href="/about">About</NavbarLink>
-                <NavbarLink href="#">Docs</NavbarLink>
-                <NavbarLink href="#" className="sm:hidden">
-                  Log in
-                </NavbarLink>
-              </>
-            }
-            logo={
-              <NavbarLogo href="/">
-                <Image
-                  src="/img/logos/oatmeal-mona-color-mauve-950.svg"
-                  alt="Oatmeal"
-                  className="dark:hidden"
-                  width={113}
-                  height={28}
-                />
-                <Image
-                  src="/img/logos/oatmeal-mona-color-white.svg"
-                  alt="Oatmeal"
-                  className="not-dark:hidden"
-                  width={113}
-                  height={28}
-                />
-              </NavbarLogo>
-            }
-            actions={
-              <>
-                <PlainButtonLink href="#" className="max-sm:hidden">
-                  Log in
-                </PlainButtonLink>
-                <ButtonLink href="#">Get started</ButtonLink>
-              </>
-            }
-          />
+        <NavbarWithLinksActionsAndCenteredLogo
+          id="navbar"
+          links={
+            <>
+              <NavbarLink href="/#how-it-works">How it works</NavbarLink>
+              <NavbarLink href="/#who">Who it’s for</NavbarLink>
+              <NavbarLink href="/quiz" className="sm:hidden">
+                Plan a date
+              </NavbarLink>
+            </>
+          }
+          logo={
+            <NavbarLogo href="/">
+              <BetterDateMark />
+            </NavbarLogo>
+          }
+          actions={
+            <>
+              <PlainButtonLink href="/#how-it-works" className="max-sm:hidden">
+                How it works
+              </PlainButtonLink>
+              <ButtonLink href="/quiz">Plan a date</ButtonLink>
+            </>
+          }
+        />
 
-          <Main>{children}</Main>
+        <Main>{children}</Main>
 
-          <FooterWithNewsletterFormCategoriesAndSocialIcons
-            id="footer"
-            cta={
-              <NewsletterForm
-                headline="Stay in the loop"
-                subheadline={
-                  <p>
-                    Get customer support tips, product updates and customer stories that you can archive as soon as they
-                    arrive.
-                  </p>
-                }
-                action="#"
-              />
-            }
-            links={
-              <>
-                <FooterCategory title="Product">
-                  <FooterLink href="#">Features</FooterLink>
-                  <FooterLink href="#">Pricing</FooterLink>
-                  <FooterLink href="#">Integrations</FooterLink>
-                </FooterCategory>
-                <FooterCategory title="Company">
-                  <FooterLink href="#">About</FooterLink>
-                  <FooterLink href="#">Careers</FooterLink>
-                  <FooterLink href="#">Blog</FooterLink>
-                  <FooterLink href="#">Press Kit</FooterLink>
-                </FooterCategory>
-                <FooterCategory title="Resources">
-                  <FooterLink href="#">Help Center</FooterLink>
-                  <FooterLink href="#">API Docs</FooterLink>
-                  <FooterLink href="#">Status</FooterLink>
-                  <FooterLink href="#">Contact</FooterLink>
-                </FooterCategory>
-                <FooterCategory title="Legal">
-                  <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
-                  <FooterLink href="#">Terms of Service</FooterLink>
-                  <FooterLink href="#">Security</FooterLink>
-                </FooterCategory>
-              </>
-            }
-            fineprint="© 2025 Oatmeal, Inc."
-            socialLinks={
-              <>
-                <SocialLink href="https://x.com" name="X">
-                  <XIcon />
-                </SocialLink>
-                <SocialLink href="https://github.com" name="GitHub">
-                  <GitHubIcon />
-                </SocialLink>
-                <SocialLink href="https://www.youtube.com" name="YouTube">
-                  <YouTubeIcon />
-                </SocialLink>
-              </>
-            }
-          />
-        </>
+        <FooterWithLinkCategories
+          id="footer"
+          links={
+            <>
+              <FooterCategory title="Product">
+                <FooterLink href="/quiz">Plan a date</FooterLink>
+                <FooterLink href="/#how-it-works">How it works</FooterLink>
+              </FooterCategory>
+              <FooterCategory title="Audience">
+                <FooterLink href="/#who">First dates</FooterLink>
+                <FooterLink href="/#who">Couples</FooterLink>
+              </FooterCategory>
+              <FooterCategory title="Legal">
+                <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+              </FooterCategory>
+            </>
+          }
+          fineprint="© 2026 Better Date. Venue suggestions are AI-generated — always verify hours and reservations."
+        />
       </body>
     </html>
   )

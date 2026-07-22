@@ -1,21 +1,32 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-display: 'Mona Sans', sans-serif;
-  --font-display--font-variation-settings: 'wdth' 112.5;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Figtree', system-ui, sans-serif;
 
-  --color-mauve-50: oklch(98.5% 0 0);
-  --color-mauve-100: oklch(96% 0.003 325.6);
-  --color-mauve-200: oklch(92.2% 0.005 325.62);
-  --color-mauve-300: oklch(86.5% 0.012 325.68);
-  --color-mauve-400: oklch(71.1% 0.019 323.02);
-  --color-mauve-500: oklch(54.2% 0.034 322.5);
-  --color-mauve-600: oklch(43.5% 0.029 321.78);
-  --color-mauve-700: oklch(36.4% 0.029 323.89);
-  --color-mauve-800: oklch(26.3% 0.024 320.12);
-  --color-mauve-900: oklch(21.2% 0.019 322.12);
-  --color-mauve-950: oklch(14.5% 0.008 326);
+  /* Warm charcoal neutrals (kept as mauve-* so existing components pick them up) */
+  --color-mauve-50: oklch(98.2% 0.008 75);
+  --color-mauve-100: oklch(96.4% 0.012 70);
+  --color-mauve-200: oklch(91.5% 0.014 65);
+  --color-mauve-300: oklch(84% 0.016 55);
+  --color-mauve-400: oklch(68% 0.02 45);
+  --color-mauve-500: oklch(52% 0.022 40);
+  --color-mauve-600: oklch(42% 0.02 38);
+  --color-mauve-700: oklch(34% 0.018 35);
+  --color-mauve-800: oklch(26% 0.014 32);
+  --color-mauve-900: oklch(20% 0.012 30);
+  --color-mauve-950: oklch(15% 0.01 28);
+
+  --color-rose-50: oklch(97% 0.015 15);
+  --color-rose-100: oklch(94% 0.03 15);
+  --color-rose-200: oklch(88% 0.05 15);
+  --color-rose-300: oklch(78% 0.08 15);
+  --color-rose-400: oklch(68% 0.12 15);
+  --color-rose-500: oklch(58% 0.14 15);
+  --color-rose-600: oklch(50% 0.14 15);
+  --color-rose-700: oklch(42% 0.12 15);
+  --color-rose-800: oklch(35% 0.1 15);
+  --color-rose-900: oklch(28% 0.08 15);
 }
 
 @layer base {
@@ -23,11 +34,24 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-mauve-100);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 10% -10%, oklch(88% 0.04 15 / 0.45), transparent),
+      radial-gradient(ellipse 60% 40% at 90% 0%, oklch(90% 0.03 70 / 0.5), transparent),
+      linear-gradient(180deg, var(--color-mauve-50), var(--color-mauve-100) 40%, var(--color-mauve-100));
+    background-attachment: fixed;
     --scroll-padding-top: 0;
     scroll-padding-top: var(--scroll-padding-top);
 
     @variant dark {
       background-color: var(--color-mauve-950);
+      background-image:
+        radial-gradient(ellipse 70% 45% at 15% -5%, oklch(28% 0.05 15 / 0.5), transparent),
+        radial-gradient(ellipse 50% 35% at 90% 5%, oklch(25% 0.03 50 / 0.4), transparent),
+        linear-gradient(180deg, var(--color-mauve-950), var(--color-mauve-900));
     }
+  }
+
+  body {
+    font-family: var(--font-sans);
   }
 }
