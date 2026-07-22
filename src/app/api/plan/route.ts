@@ -45,6 +45,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ plan: object, answers: parsed.data })
   } catch (error) {
     console.error('Failed to generate date plan', error)
+
+    const message = error instanceof Error ? error.message : ''
+    if (message.includes('Incorrect API key') || message.includes('invalid_api_key')) {
+      return NextResponse.json(
+        {
+          error:
+            'OpenAI rejected the API key. Check .env.local — paste the key exactly as shown (usually sk-proj-...), with no extra sk- prefix, then restart npm run dev.',
+        },
+        { status: 401 },
+      )
+    }
+
     return NextResponse.json(
       { error: 'Could not generate a date plan. Please try again in a moment.' },
       { status: 502 },
