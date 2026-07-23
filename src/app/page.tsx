@@ -22,8 +22,8 @@ export default function Page() {
           headline="Intentional dates, planned for where you are."
           subheadline={
             <p>
-              Take a short preference quiz. We’ll use your answers — and AI — to build a thoughtful local date plan for
-              first dates and couples who want connection back on the calendar.
+              Our mission is to eliminate bad dates by helping you plan thoughtful, intentional nights from your
+              preferences — toward a world without bad dates.
             </p>
           }
           cta={

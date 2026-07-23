@@ -1,206 +1,80 @@
-import Image from 'next/image'
+import type { Metadata } from 'next'
 
-import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
-import { ChevronIcon } from '@/components/icons/chevron-icon'
-import { CallToActionSimple } from '@/components/sections/call-to-action-simple'
-import { HeroLeftAlignedWithPhoto } from '@/components/sections/hero-left-aligned-with-photo'
-import { Stat, StatsWithGraph } from '@/components/sections/stats-with-graph'
-import { TeamFourColumnGrid, TeamMember } from '@/components/sections/team-four-column-grid'
-import { TestimonialTwoColumnWithLargePhoto } from '@/components/sections/testimonial-two-column-with-large-photo'
+import { ButtonLink } from '@/components/elements/button'
+import { Section } from '@/components/elements/section'
+import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
+import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
+
+export const metadata: Metadata = {
+  title: 'About — Better Date',
+  description:
+    'Better Date’s mission is to eliminate bad dates by helping plan thoughtful, intentional dates from your preferences. Our vision is a world without bad dates.',
+}
 
 export default function Page() {
   return (
     <>
-      {/* Hero */}
-      <HeroLeftAlignedWithPhoto
+      <HeroSimpleCentered
         id="hero"
-        headline="Your customer success is our mission."
+        eyebrow={
+          <p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">About Better Date</p>
+        }
+        headline="A world without bad dates."
         subheadline={
           <p>
-            We're on a mission to take the human element completely out of customer support — so your team can focus on
-            what matters most, profitability.
+            That’s our vision. We’re building Better Date so first dates and couples spend less time guessing — and more
+            time actually connecting.
           </p>
         }
-        photo={
-          <Image
-            src="/img/photos/1.webp"
-            alt=""
-            width={1800}
-            height={945}
-            className="not-dark:bg-white/75 dark:bg-black/75"
-          />
-        }
+        className="pt-12 pb-8 sm:pt-16"
       />
-      {/* Stats */}
-      <StatsWithGraph
-        id="stats"
-        eyebrow="Built for scale"
-        headline="The inbox powering customer conversations everywhere."
-        subheadline={
-          <p>
-            Oatmeal helps teams deliver personal, organized, and fast customer support across the world. From small
-            startups to enterprise teams, we process millions of messages each month — using a massive network of low
-            wage workers stationed around the globe.
-          </p>
-        }
-      >
-        <Stat stat="2M+" text="Emails manually processed every week across thousands of teams." />
-        <Stat stat="99.98%" text="Uptime — because your customers never stop complaining." />
-      </StatsWithGraph>
-      {/* Testimonial */}
-      <TestimonialTwoColumnWithLargePhoto
-        id="testimonial"
-        quote={
-          <p>
-            Ever since we started using Oatmeal, our customer satisfaction scores have skyrocketed. The personal touch
-            that their human-AI hybrid support provides is unparalleled.
-          </p>
-        }
-        img={
-          <Image
-            src="/img/avatars/16-h-1000-w-1400.webp"
-            alt=""
-            className="not-dark:bg-white/75 dark:bg-black/75"
-            width={1400}
-            height={1000}
-          />
-        }
-        name="Lynn Marshall"
-        byline="Founder at Pine Labs"
-      />
-      {/* Team */}
-      <TeamFourColumnGrid
-        id="team"
-        headline="Our leadership team"
-        subheadline={
-          <p>
-            Oatmeals's leadership team combines decades of experience in private equity, where they honed their skills
-            in cost-cutting and maximizing shareholder value.
-          </p>
-        }
-      >
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/1-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Leslie Alexander"
-          byline="Co-Founder / CEO"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/2-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Michael Foster"
-          byline="Co-Founder / CTO"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/7-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Dries Vincent"
-          byline="Business Relations"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/4-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Lindsay Walton"
-          byline="Front-end Developer"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/5-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Noor Hasan"
-          byline="Designer"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/6-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Tom Cook"
-          byline="Director of Product"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/8-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Whitney Francis"
-          byline="Copywriter"
-        />
-        <TeamMember
-          img={
-            <Image
-              src="/img/avatars/3-h-1000-w-800.webp"
-              alt=""
-              className="not-dark:bg-white/75 dark:bg-black/75"
-              width={800}
-              height={1000}
-            />
-          }
-          name="Leonard Wu"
-          byline="Senior Designer"
-        />
-      </TeamFourColumnGrid>
-      {/* Call To Action */}
-      <CallToActionSimple
-        id="call-to-action"
-        headline="Have anymore questions?"
-        subheadline={
-          <p>Chat to someone on our sales team, who will make promises about our roadmap that we won't keep.</p>
-        }
-        cta={
-          <div className="flex items-center gap-4">
-            <ButtonLink href="#" size="lg">
-              Chat with us
-            </ButtonLink>
 
-            <PlainButtonLink href="#" size="lg">
-              Book a demo <ChevronIcon />
-            </PlainButtonLink>
-          </div>
+      <Section
+        id="mission"
+        eyebrow="Mission"
+        headline="Eliminate bad dates"
+        subheadline={
+          <p>
+            We help people plan thoughtful and intentional dates based on their preferences — who they’re with, where
+            they are, what they want the night to feel like, and what to avoid. Preferences in. A clear local plan out.
+          </p>
+        }
+      >
+        <div className="max-w-2xl space-y-4 text-sm/7 text-mauve-700 dark:text-mauve-400">
+          <p>
+            Bad dates aren’t usually about the people. They’re about mismatched energy, nowhere good to go, or defaulting
+            to whatever’s easiest. Better Date exists to take that friction away.
+          </p>
+        </div>
+      </Section>
+
+      <Section
+        id="vision"
+        eyebrow="Vision"
+        headline="A world without bad dates"
+        subheadline={
+          <p>
+            Not a promise that every night will be perfect — a commitment to make intentional planning the default, so
+            fewer evenings go to waste.
+          </p>
+        }
+      >
+        <div className="max-w-2xl space-y-4 text-sm/7 text-mauve-700 dark:text-mauve-400">
+          <p>
+            Whether it’s date one or date one hundred, the bar is the same: a plan that fits you, in your city, that you
+            can actually follow through on.
+          </p>
+        </div>
+      </Section>
+
+      <CallToActionSimpleCentered
+        id="cta"
+        headline="Ready to plan better?"
+        subheadline={<p>Take the quiz and get a thoughtful local date plan in minutes.</p>}
+        cta={
+          <ButtonLink href="/quiz" size="lg">
+            Start the quiz
+          </ButtonLink>
         }
       />
     </>

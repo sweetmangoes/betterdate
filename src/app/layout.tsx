@@ -16,7 +16,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Better Date — AI date plans for first dates and couples',
   description:
-    'Take a short preference quiz and get a thoughtful local date plan — for first dates and couples who want intentional time together.',
+    'Eliminate bad dates. Plan thoughtful, intentional nights from your preferences — toward a world without bad dates.',
 }
 
 function BetterDateMark({ className }: { className?: string }) {
@@ -50,7 +50,7 @@ export default function RootLayout({
           links={
             <>
               <NavbarLink href="/#how-it-works">How it works</NavbarLink>
-              <NavbarLink href="/#who">Who it’s for</NavbarLink>
+              <NavbarLink href="/about">About</NavbarLink>
               <NavbarLink href="/quiz" className="sm:hidden">
                 Plan a date
               </NavbarLink>
@@ -81,9 +81,9 @@ export default function RootLayout({
                 <FooterLink href="/quiz">Plan a date</FooterLink>
                 <FooterLink href="/#how-it-works">How it works</FooterLink>
               </FooterCategory>
-              <FooterCategory title="Audience">
-                <FooterLink href="/#who">First dates</FooterLink>
-                <FooterLink href="/#who">Couples</FooterLink>
+              <FooterCategory title="Company">
+                <FooterLink href="/about">About</FooterLink>
+                <FooterLink href="/#who">Who it’s for</FooterLink>
               </FooterCategory>
               <FooterCategory title="Legal">
                 <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
