@@ -1,11 +1,20 @@
 {
   "name": "betterdate",
   "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
+    "dev:web": "next dev",
+    "dev:mobile": "npm run start --workspace=@betterdate/mobile",
     "build": "next build",
+    "build:web": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck:shared": "npm run typecheck --workspace=@betterdate/shared"
   },
   "prettier": {
     "semi": false,
@@ -22,6 +31,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.17",
+    "@betterdate/shared": "*",
     "@tailwindplus/elements": "0.0.0-insiders.98ea4bc",
     "ai": "^7.0.34",
     "clsx": "^2.1.1",
@@ -42,6 +52,9 @@
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "^5"
+  },
+  "overrides": {
+    "react-native": "0.81.5"
   },
   "description": "AI date planner for intentional first dates and couples"
 }

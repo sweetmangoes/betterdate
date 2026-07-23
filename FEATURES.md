@@ -216,7 +216,8 @@ Status key: `shipped` · `next` · `planned` · `later`
 - Vercel (or similar) production URL
 - `OPENAI_API_KEY` + `GOOGLE_MAPS_API_KEY`
 
-**Touchpoints:** `apps/mobile` (Expo, iOS focus), `src/lib/places.ts`, `src/app/api/plan/route.ts`, shared schemas, web `/quiz` + `/plan`
+**Touchpoints:** `apps/mobile` (Expo, iOS focus), `packages/shared` (quiz/plan schemas), `src/lib/places.ts` (upcoming), `src/app/api/plan/route.ts`, web `/quiz` + `/plan`
+
 
 ---
 
