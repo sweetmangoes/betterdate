@@ -15,8 +15,11 @@ Status key: `shipped` · `next` · `planned` · `later`
 |---------|--------|
 | Preference quiz | 8 steps: audience, location, occasion, budget, time, energy, vibes, constraints |
 | AI date plan | OpenAI `gpt-4o-mini` structured itinerary via `/api/plan` |
-| Plan result page | Timeline, conversation starters, backup idea; `sessionStorage` only |
-| Marketing landing | Brand, how it works, who it’s for |
+| Plan result page (web) | Timeline, conversation starters, backup idea; `sessionStorage` |
+| Marketing landing + About | Mission/vision; how it works; who it’s for |
+| Monorepo + shared schemas | `packages/shared` for quiz/plan Zod types |
+| iOS Expo app (SDK 54) | Home → quiz → plan; calls deployed API; AsyncStorage; Expo Go compatible |
+| Vercel deploy | Public HTTPS API for mobile |
 
 ---
 
@@ -42,7 +45,39 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
-### 2. Calendar invite for the date — `planned`
+### 2. Pre-date checklist — `planned`
+
+**Why:** A recommended plan isn’t done until the user prepares. A checklist turns the itinerary into action and reduces last-minute bad-date friction (forgot to book, no outfit plan, no meetup spot).
+
+**What it is:** After a plan is generated, show a **to-do checklist** tailored to that plan (and audience: first date vs couple).
+
+**Example items (AI- and/or template-generated):**
+
+- Confirm / reserve restaurant or bar (link out when available)
+- Check hours / weather for outdoor stops
+- Pick meetup point and time
+- Share plan with date (text / share sheet)
+- Add to calendar
+- Transit / parking note
+- Conversation starters reviewed (first dates)
+- Backup idea noted if weather turns
+
+**Approach (phased):**
+
+| Phase | What | How |
+|-------|------|-----|
+| A | Static + plan-aware template checklist | Rules from stop categories (food → “reserve?”, walk → “check weather”) on web + iOS |
+| B | AI-generated checklist in plan JSON | Extend `datePlanSchema` with `checklist: [{ id, label, doneDefault? }]` |
+| C | Interactive checkboxes | Persist checked state (`sessionStorage` / AsyncStorage); no accounts yet |
+| D | Deep-link actions on items | “Reserve” / “Open Maps” / “Add to calendar” from checklist rows |
+
+**Needs:** Plan page UI (web + iOS); optional schema field; pairs well with calendar + reserve deep links.
+
+**Touchpoints:** `packages/shared` plan schema, web `/plan`, `apps/mobile` Plan screen
+
+---
+
+### 3. Calendar invite for the date — `planned`
 
 **Why:** Make the plan feel real and easy to commit to.
 
@@ -62,7 +97,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
-### 3. Reservations (OpenTable, Resy, …) — `planned`
+### 4. Reservations (OpenTable, Resy, …) — `planned`
 
 **Why:** Close the loop from “idea” to “booked table.”
 
@@ -84,7 +119,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
-### 4. Blog (content marketing) — `planned`
+### 5. Blog (content marketing) — `planned`
 
 **Why:** SEO + trust. Rank for “first date ideas [city]”, “intentional date night”, etc., and funnel readers into the quiz.
 
@@ -103,7 +138,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
-### 5. Search indexing & SEO basics — `planned`
+### 6. Search indexing & SEO basics — `planned`
 
 **Why:** The app won’t show up in Google unless we make it crawlable and submit it for indexing. Marketing pages + blog only help if search engines can find them.
 
@@ -126,7 +161,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
-### 6. iOS app (Apple-first) + web — `next` · 30-day MVP goal
+### 7. iOS app (Apple-first) + web — `next` · 30-day MVP goal
 
 **Platform decision:** **iOS first.** Android is phase 1.5 (same Expo codebase; no Play polish in the 30-day window).
 
@@ -225,14 +260,16 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 | Feature | Status | Notes |
 |---------|--------|--------|
+| Payments / premium | `later` · **build last** | Free: **1 plan / week** after signup; Pro: unlimited via Stripe (web) + Apple IAP (iOS); Supabase |
+| User accounts + saved plans | `later` · **build last** | Supabase Auth; **1 anonymous plan first**, then require sign-in |
+| Sign in with Apple | `later` | iOS auth |
+| Apple Calendar invitations | `later` | EventKit invitee flow |
 | **Android / Play Store** | `later` · phase 1.5 | Same Expo app; start after Week 4 iOS MVP |
-| User accounts + saved plans | `later` | Required for email invites, history, couple sharing |
 | Couple share link | `later` | One plan, two people; edit vibes together |
 | “Plan another” with tweak | `later` | Reuse last quiz answers; regenerate |
 | Weather-aware backups | `later` | Pull forecast for date night; prefer indoor if rain |
 | Budget estimate from menus | `later` | Rough; don’t overclaim accuracy |
 | Push reminders (“Date night tomorrow”) | `later` | Needs accounts + notification permission |
-| Payments / premium | `later` | Rate-limit free plans; Places cost may force this |
 | Blog cadence / CMS | `later` | After MVP; SEO compounds once indexing works |
 | Capacitor/PWA fallback | `later` | Only if Expo path stalls; not the primary bet |
 
@@ -242,10 +279,52 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 1. Android internal build + Play listing  
 2. Blog content cadence  
-3. Accounts + email invites  
-4. Partner reservation APIs  
+3. Partner reservation APIs  
+4. **Monetization last:** Supabase Auth + usage · 1 anonymous plan → sign-in · free 1/week · Stripe (web) + Apple IAP (iOS) · saved plans for Pro  
 
-**Explicit tradeoff:** These 4 weeks = **Places + iOS + web product loop**. Not Android polish, not booking partnerships, not accounts.
+**Explicit tradeoff:** These 4 weeks = **Places + iOS + web product loop**. Not Android polish, not booking partnerships, not accounts/paywall.
+
+---
+
+## Monetization + Supabase — `later` (build last)
+
+**Mission fit:** Free users can try Better Date; paid users get unlimited intentional planning. Caps protect OpenAI/Places cost.
+
+### Tiers
+
+| Tier | Limit | Notes |
+|------|--------|--------|
+| **Free** | **1 date plan per week** | Resets on a rolling 7-day window or calendar week (pick one at implement time; default: rolling 7 days from last plan) |
+| **Pro (paid)** | **Unlimited** plans | History, sync, richer checklist/calendar features over time |
+
+Also enforce a server-side sanity limit (e.g. burst protection) even for Pro to stop abuse.
+
+### Supabase (source of truth)
+
+| Table | Purpose |
+|-------|---------|
+| `profiles` | `tier` (`free` \| `pro`), Stripe / Apple customer ids |
+| `usage` | `user_id`, period key, `plans_generated` (or `last_plan_at` for weekly free cap) |
+| `date_plans` | Saved quiz answers + plan JSON (Pro; optional light save for free) |
+
+**Enforce on `/api/plan`:** check auth → check free weekly cap → call AI/Places → record usage → return plan. Never trust the client for limits.
+
+### Payments
+
+| Surface | Billing |
+|---------|---------|
+| Web | Stripe Checkout → webhook sets `profiles.tier = pro` |
+| iOS | Apple In-App Purchase (StoreKit) → App Store Server Notifications update same `tier` |
+
+### Auth (locked)
+
+- **Allow 1 anonymous plan first** (device/session keyed lightly — e.g. cookie or device id — just enough to block immediate spam).  
+- After that, **require sign-in** to continue (free = 1/week, Pro = unlimited).  
+- **Build order:** implement monetization / Supabase / paywall **last** — after Places, checklist, calendar, and iOS product loop feel solid.
+
+### Apple-native (iOS, later)
+
+EventKit calendar + invitations, Sign in with Apple, StoreKit, Share Sheet, MapKit — see Later ideas.
 
 ---
 
@@ -254,6 +333,11 @@ Status key: `shipped` · `next` · `planned` · `later`
 ```
 OPENAI_API_KEY=           # shipped
 GOOGLE_MAPS_API_KEY=      # Places + Geocoding
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=  # server only — usage / webhooks
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 RESEND_API_KEY=           # optional email invites
 # OpenTable / Resy partner credentials — only if approved
 ```
