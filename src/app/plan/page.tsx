@@ -100,11 +100,27 @@ export default function PlanPage() {
                   <h2 className="font-display text-2xl tracking-tight text-mauve-950 dark:text-white">{stop.name}</h2>
                   <span className="text-sm/7 text-mauve-600 dark:text-mauve-400">
                     {categoryLabels[stop.category]} · {stop.neighborhood}
+                    {stop.rating != null ? ` · ★ ${stop.rating.toFixed(1)}` : ''}
                   </span>
                 </div>
+                {stop.address ? (
+                  <p className="mt-1 text-sm/7 text-mauve-600 dark:text-mauve-500">{stop.address}</p>
+                ) : null}
                 <p className="mt-1 text-sm/7 font-medium text-rose-700 dark:text-rose-300">{stop.timeHint}</p>
                 <p className="mt-3 text-sm/7 text-mauve-700 dark:text-mauve-400">{stop.whyItFits}</p>
                 <p className="mt-2 text-sm/7 text-mauve-600 italic dark:text-mauve-500">Tip: {stop.tip}</p>
+                {stop.mapsUrl ? (
+                  <p className="mt-3">
+                    <a
+                      href={stop.mapsUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm/7 font-medium text-rose-700 underline-offset-4 hover:underline dark:text-rose-300"
+                    >
+                      Open in Google Maps
+                    </a>
+                  </p>
+                ) : null}
               </div>
             </li>
           ))}

@@ -2,7 +2,15 @@ import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
 import { NextResponse } from 'next/server'
 
-import { buildPlanPrompt, datePlanSchema, PLAN_SYSTEM_PROMPT } from '@/lib/plan'
+import { enrichPlanFromCandidates } from '@/lib/enrich-plan'
+import {
+  buildPlanPrompt,
+  datePlanSchema,
+  groundedPlanDraftSchema,
+  GROUNDED_PLAN_SYSTEM_PROMPT,
+  PLAN_SYSTEM_PROMPT,
+} from '@/lib/plan'
+import { findPlaceCandidates } from '@/lib/places'
 import { quizAnswersSchema } from '@/lib/quiz'
 
 export const runtime = 'nodejs'
@@ -32,6 +40,47 @@ export async function POST(request: Request) {
   }
 
   try {
+    const hasPlacesKey = Boolean(process.env.GOOGLE_MAPS_API_KEY)
+
+    if (hasPlacesKey) {
+      const candidates = await findPlaceCandidates(parsed.data)
+
+      if (candidates.length < 2) {
+        return NextResponse.json(
+          {
+            error:
+              'Could not find enough local places for that area. Try a more specific city or neighborhood.',
+          },
+          { status: 422 },
+        )
+      }
+
+      const { object: draft } = await generateObject({
+        model: openai('gpt-4o-mini'),
+        schema: groundedPlanDraftSchema,
+        schemaName: 'GroundedDatePlan',
+        schemaDescription: 'A date itinerary using only provided Google Places IDs',
+        system: GROUNDED_PLAN_SYSTEM_PROMPT,
+        prompt: buildPlanPrompt(parsed.data, candidates),
+        temperature: 0.7,
+      })
+
+      let plan
+      try {
+        plan = enrichPlanFromCandidates(draft, candidates)
+      } catch (enrichError) {
+        console.error('Failed to enrich plan from Places candidates', enrichError)
+        return NextResponse.json(
+          { error: 'The planner picked an invalid place. Please try generating again.' },
+          { status: 502 },
+        )
+      }
+
+      const validated = datePlanSchema.parse(plan)
+      return NextResponse.json({ plan: validated, answers: parsed.data, grounded: true })
+    }
+
+    // Fallback without Places key (dev / until key is configured)
     const { object } = await generateObject({
       model: openai('gpt-4o-mini'),
       schema: datePlanSchema,
@@ -42,7 +91,7 @@ export async function POST(request: Request) {
       temperature: 0.8,
     })
 
-    return NextResponse.json({ plan: object, answers: parsed.data })
+    return NextResponse.json({ plan: object, answers: parsed.data, grounded: false })
   } catch (error) {
     console.error('Failed to generate date plan', error)
 
@@ -55,6 +104,10 @@ export async function POST(request: Request) {
         },
         { status: 401 },
       )
+    }
+
+    if (message.includes('GOOGLE_MAPS_API_KEY') || message.includes('Google Places')) {
+      return NextResponse.json({ error: message }, { status: 500 })
     }
 
     return NextResponse.json(

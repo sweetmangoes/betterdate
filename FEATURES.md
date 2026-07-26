@@ -20,28 +20,21 @@ Status key: `shipped` · `next` · `planned` · `later`
 | Monorepo + shared schemas | `packages/shared` for quiz/plan Zod types |
 | iOS Expo app (SDK 54) | Home → quiz → plan; calls deployed API; AsyncStorage; Expo Go compatible |
 | Vercel deploy | Public HTTPS API for mobile |
+| Google Places grounding | Places-first search → LLM picks only from real candidates; Maps links on plan |
 
 ---
 
 ## Next / planned
 
-### 1. Google Places grounding — `next`
+### 1. Google Places grounding — `shipped`
 
 **Why:** Stop inventing venues; only plan from real local results.
 
-**Approach:** Places-first pipeline
+**Shipped approach:** Geocode location → 2–4 Text Searches from vibes/budget → LLM selects by `placeId` only → enrich stops with address, rating, Maps URL.
 
-1. Geocode city/neighborhood (Geocoding or Places)
-2. Run 2–4 Text/Nearby searches from quiz vibes + budget
-3. Pass candidate venues (id, name, address, rating, price, maps URL) into the LLM
-4. Prompt: only choose/order from that list
-5. Enrich plan stops with Maps links + “verify hours” still shown
+**Needs:** `GOOGLE_MAPS_API_KEY` with Places API (New) + Geocoding enabled. Falls back to AI-only inventing if key is missing (dev).
 
-**Needs:** Google Cloud project, billing, Places API (New), `GOOGLE_MAPS_API_KEY`
-
-**Cost note:** Places calls dominate spend (~$0.06–$0.13/plan after free tier); LLM stays cheap.
-
-**Touchpoints:** `src/lib/places.ts`, update `src/app/api/plan/route.ts`, extend plan schema + `/plan` UI
+**Touchpoints:** `src/lib/places.ts`, `src/lib/enrich-plan.ts`, `src/app/api/plan/route.ts`, shared plan schema, web/iOS plan UIs
 
 ---
 

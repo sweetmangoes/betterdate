@@ -1,6 +1,6 @@
 import type { DatePlan } from '@betterdate/shared'
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import type { RootNavigation, RootStackParamList } from '../navigation'
@@ -48,12 +48,19 @@ export function PlanScreen() {
                 <Text style={styles.stopName}>{stop.name}</Text>
                 <Text style={styles.stopMeta}>
                   {categoryLabels[stop.category]} · {stop.neighborhood}
+                  {stop.rating != null ? ` · ★ ${stop.rating.toFixed(1)}` : ''}
                 </Text>
+                {stop.address ? <Text style={styles.address}>{stop.address}</Text> : null}
                 <Text style={styles.timeHint}>{stop.timeHint}</Text>
               </View>
             </View>
             <Text style={styles.why}>{stop.whyItFits}</Text>
             <Text style={styles.tip}>Tip: {stop.tip}</Text>
+            {stop.mapsUrl ? (
+              <Pressable onPress={() => Linking.openURL(stop.mapsUrl!)} style={styles.mapsLink}>
+                <Text style={styles.mapsLinkText}>Open in Google Maps</Text>
+              </Pressable>
+            ) : null}
             {index < stops.length - 1 ? <View style={styles.divider} /> : null}
           </View>
         ))}
@@ -104,6 +111,7 @@ const styles = StyleSheet.create({
   stopCopy: { flex: 1 },
   stopName: { fontSize: 22, fontWeight: '600', color: colors.charcoal },
   stopMeta: { marginTop: 2, fontSize: 14, color: colors.muted },
+  address: { marginTop: 4, fontSize: 13, color: colors.muted },
   timeHint: { marginTop: 6, fontSize: 14, fontWeight: '600', color: colors.rose },
   why: { marginTop: 10, marginLeft: 44, fontSize: 15, lineHeight: 22, color: colors.muted },
   tip: {
@@ -113,6 +121,8 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: colors.muted,
   },
+  mapsLink: { marginTop: 10, marginLeft: 44 },
+  mapsLinkText: { fontSize: 14, fontWeight: '600', color: colors.rose },
   divider: {
     marginTop: 20,
     marginBottom: 12,
