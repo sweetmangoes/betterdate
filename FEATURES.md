@@ -90,6 +90,34 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
+### 3b. Find free time (read calendars) — `planned`
+
+**Why:** Planning a date fails when nobody knows when both people are free. Reading calendars (with permission) surfaces mutual open windows before we generate or lock a plan.
+
+**What it is:** After (or before) the preference quiz, optionally connect calendars and suggest **shared free slots** for the date — then generate/attach the plan to a chosen slot.
+
+**Approach (phased):**
+
+| Phase | What | How |
+|-------|------|-----|
+| A | Solo free times (iOS) | EventKit: read user’s busy blocks locally; suggest open evenings this week (no cloud sync) |
+| B | Solo free times (web) | Google Calendar API (OAuth) — freeBusy query for the signed-in user |
+| C | Two-person overlap | Both connect calendars (or one shares a free/busy link); compute intersection of free windows |
+| D | Plan into slot | Pick a free slot → generate plan for that time → add to calendar / invite |
+
+**Privacy rules:** Request minimum scopes (`calendar.freebusy` / EventKit busy only — not full event titles when possible); clear consent copy; never store raw calendar event details long-term unless user opts in.
+
+**Needs:** Sign-in (Supabase) for Google OAuth on web; Apple calendar permission on iOS; couples flow needs accounts or a share link.
+
+**Platform notes:**
+- **iOS:** EventKit first (native, no Google required)
+- **Web:** Google Calendar freeBusy
+- **Apple Calendar invitations** (later) can reuse the chosen slot
+
+**Touchpoints:** quiz or pre-plan “When are you free?” step, `src/lib/availability.ts`, iOS EventKit module, Google OAuth + freeBusy API
+
+---
+
 ### 4. Reservations (OpenTable, Resy, …) — `planned`
 
 **Why:** Close the loop from “idea” to “booked table.”
@@ -257,6 +285,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 | User accounts + saved plans | `later` · **build last** | Supabase Auth; **1 anonymous plan first**, then require sign-in |
 | Sign in with Apple | `later` | iOS auth |
 | Apple Calendar invitations | `later` | EventKit invitee flow |
+| Find free time (read calendars) | `planned` | EventKit (iOS) + Google freeBusy (web); suggest mutual open slots before planning |
 | **Android / Play Store** | `later` · phase 1.5 | Same Expo app; start after Week 4 iOS MVP |
 | Couple share link | `later` | One plan, two people; edit vibes together |
 | “Plan another” with tweak | `later` | Reuse last quiz answers; regenerate |
