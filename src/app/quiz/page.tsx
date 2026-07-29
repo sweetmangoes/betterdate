@@ -12,6 +12,7 @@ import {
   budgetOptions,
   emptyQuizAnswers,
   energyOptions,
+  meetingPreferenceOptions,
   occasionOptions,
   PLAN_STORAGE_KEY,
   QUIZ_STORAGE_KEY,
@@ -57,8 +58,19 @@ function isStepComplete(step: QuizStepId, answers: QuizAnswers): boolean {
   switch (step) {
     case 'audience':
       return Boolean(answers.audience)
+    case 'meeting':
+      return Boolean(answers.meetingPreference)
     case 'location':
-      return answers.location.trim().length >= 2
+      switch (answers.meetingPreference) {
+        case 'midpoint':
+          return answers.myLocation.trim().length >= 2 && answers.theirLocation.trim().length >= 2
+        case 'near_me':
+          return answers.myLocation.trim().length >= 2
+        case 'near_them':
+          return answers.theirLocation.trim().length >= 2
+        case 'neighborhood':
+          return answers.location.trim().length >= 2
+      }
     case 'occasion':
       return Boolean(answers.occasion)
     case 'budget':
@@ -73,6 +85,9 @@ function isStepComplete(step: QuizStepId, answers: QuizAnswers): boolean {
       return true
   }
 }
+
+const inputClassName =
+  'w-full rounded-2xl border border-mauve-950/10 bg-white/70 px-4 py-3 text-mauve-950 outline-none focus:border-rose-600 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-rose-400'
 
 export default function QuizPage() {
   const router = useRouter()
@@ -178,15 +193,67 @@ export default function QuizPage() {
               />
             ))}
 
+          {step.id === 'meeting' &&
+            meetingPreferenceOptions.map((option) => (
+              <OptionButton
+                key={option.value}
+                selected={answers.meetingPreference === option.value}
+                onClick={() => update('meetingPreference', option.value)}
+                title={option.label}
+                description={option.description}
+              />
+            ))}
+
           {step.id === 'location' && (
-            <input
-              type="text"
-              value={answers.location}
-              onChange={(e) => update('location', e.target.value)}
-              placeholder="e.g. Brooklyn, Williamsburg"
-              className="w-full rounded-2xl border border-mauve-950/10 bg-white/70 px-4 py-3 text-mauve-950 outline-none focus:border-rose-600 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-rose-400"
-              autoFocus
-            />
+            <>
+              {(answers.meetingPreference === 'midpoint' ||
+                answers.meetingPreference === 'near_me') && (
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
+                    Your location
+                  </span>
+                  <input
+                    type="text"
+                    value={answers.myLocation}
+                    onChange={(e) => update('myLocation', e.target.value)}
+                    placeholder="e.g. Astoria, Queens"
+                    className={inputClassName}
+                    autoFocus
+                  />
+                </label>
+              )}
+              {(answers.meetingPreference === 'midpoint' ||
+                answers.meetingPreference === 'near_them') && (
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
+                    Their location
+                  </span>
+                  <input
+                    type="text"
+                    value={answers.theirLocation}
+                    onChange={(e) => update('theirLocation', e.target.value)}
+                    placeholder="e.g. Park Slope, Brooklyn"
+                    className={inputClassName}
+                    autoFocus={answers.meetingPreference === 'near_them'}
+                  />
+                </label>
+              )}
+              {answers.meetingPreference === 'neighborhood' && (
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
+                    Neighborhood or city
+                  </span>
+                  <input
+                    type="text"
+                    value={answers.location}
+                    onChange={(e) => update('location', e.target.value)}
+                    placeholder="e.g. Williamsburg, Brooklyn"
+                    className={inputClassName}
+                    autoFocus
+                  />
+                </label>
+              )}
+            </>
           )}
 
           {step.id === 'occasion' &&

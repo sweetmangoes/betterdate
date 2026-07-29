@@ -13,7 +13,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 | Feature | Notes |
 |---------|--------|
-| Preference quiz | 8 steps: audience, location, occasion, budget, time, energy, vibes, constraints |
+| Preference quiz | 9 steps: audience, meeting preference, location(s), occasion, budget, time, energy, vibes, constraints |
 | AI date plan | OpenAI `gpt-4o-mini` structured itinerary via `/api/plan` |
 | Plan result page (web) | Timeline, conversation starters, backup idea; `sessionStorage` |
 | Marketing landing + About | Mission/vision; how it works; who it’s for |
@@ -21,6 +21,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 | iOS Expo app (SDK 54) | Home → quiz → plan; calls deployed API; AsyncStorage; Expo Go compatible |
 | Vercel deploy | Public HTTPS API for mobile |
 | Google Places grounding | Places-first search → LLM picks only from real candidates; Maps links on plan |
+| Meeting location modes | Halfway (midpoint), near me, near them, or a specific neighborhood |
 
 ---
 
@@ -30,11 +31,16 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 **Why:** Stop inventing venues; only plan from real local results.
 
-**Shipped approach:** Geocode location → 2–4 Text Searches from vibes/budget → LLM selects by `placeId` only → enrich stops with address, rating, Maps URL.
+**Shipped approach:** Resolve search center from meeting preference (midpoint between both locations, near me, near them, or a neighborhood) → geocode → 2–4 Text Searches from vibes/budget → LLM selects by `placeId` only → enrich stops with address, rating, Maps URL.
+
+**Meeting modes:**
+- **Halfway** — geocode both people, search around the geographic midpoint with a radius that scales with distance
+- **Near me / near them** — bias Places search to that person’s location
+- **Neighborhood** — geocode the chosen area and keep results walkable nearby
 
 **Needs:** `GOOGLE_MAPS_API_KEY` with Places API (New) + Geocoding enabled. Falls back to AI-only inventing if key is missing (dev).
 
-**Touchpoints:** `src/lib/places.ts`, `src/lib/enrich-plan.ts`, `src/app/api/plan/route.ts`, shared plan schema, web/iOS plan UIs
+**Touchpoints:** `packages/shared` quiz schema, `src/lib/places.ts` (`resolveSearchCenter`), `src/lib/enrich-plan.ts`, `src/app/api/plan/route.ts`, web/iOS quiz + plan UIs
 
 ---
 

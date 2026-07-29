@@ -3,6 +3,7 @@ import {
   budgetOptions,
   emptyQuizAnswers,
   energyOptions,
+  meetingPreferenceOptions,
   occasionOptions,
   PLAN_STORAGE_KEY,
   quizAnswersSchema,
@@ -34,8 +35,19 @@ function isStepComplete(step: QuizStepId, answers: QuizAnswers): boolean {
   switch (step) {
     case 'audience':
       return Boolean(answers.audience)
+    case 'meeting':
+      return Boolean(answers.meetingPreference)
     case 'location':
-      return answers.location.trim().length >= 2
+      switch (answers.meetingPreference) {
+        case 'midpoint':
+          return answers.myLocation.trim().length >= 2 && answers.theirLocation.trim().length >= 2
+        case 'near_me':
+          return answers.myLocation.trim().length >= 2
+        case 'near_them':
+          return answers.theirLocation.trim().length >= 2
+        case 'neighborhood':
+          return answers.location.trim().length >= 2
+      }
     case 'occasion':
       return Boolean(answers.occasion)
     case 'budget':
@@ -134,15 +146,61 @@ export function QuizScreen() {
               />
             ))}
 
+          {step.id === 'meeting' &&
+            meetingPreferenceOptions.map((option) => (
+              <Option
+                key={option.value}
+                selected={answers.meetingPreference === option.value}
+                title={option.label}
+                description={option.description}
+                onPress={() => update('meetingPreference', option.value)}
+              />
+            ))}
+
           {step.id === 'location' && (
-            <TextInput
-              value={answers.location}
-              onChangeText={(text) => update('location', text)}
-              placeholder="e.g. Brooklyn, Williamsburg"
-              placeholderTextColor={colors.muted}
-              style={styles.input}
-              autoFocus
-            />
+            <View style={styles.locationFields}>
+              {(answers.meetingPreference === 'midpoint' ||
+                answers.meetingPreference === 'near_me') && (
+                <View style={styles.field}>
+                  <Text style={styles.fieldLabel}>Your location</Text>
+                  <TextInput
+                    value={answers.myLocation}
+                    onChangeText={(text) => update('myLocation', text)}
+                    placeholder="e.g. Astoria, Queens"
+                    placeholderTextColor={colors.muted}
+                    style={styles.input}
+                    autoFocus
+                  />
+                </View>
+              )}
+              {(answers.meetingPreference === 'midpoint' ||
+                answers.meetingPreference === 'near_them') && (
+                <View style={styles.field}>
+                  <Text style={styles.fieldLabel}>Their location</Text>
+                  <TextInput
+                    value={answers.theirLocation}
+                    onChangeText={(text) => update('theirLocation', text)}
+                    placeholder="e.g. Park Slope, Brooklyn"
+                    placeholderTextColor={colors.muted}
+                    style={styles.input}
+                    autoFocus={answers.meetingPreference === 'near_them'}
+                  />
+                </View>
+              )}
+              {answers.meetingPreference === 'neighborhood' && (
+                <View style={styles.field}>
+                  <Text style={styles.fieldLabel}>Neighborhood or city</Text>
+                  <TextInput
+                    value={answers.location}
+                    onChangeText={(text) => update('location', text)}
+                    placeholder="e.g. Williamsburg, Brooklyn"
+                    placeholderTextColor={colors.muted}
+                    style={styles.input}
+                    autoFocus
+                  />
+                </View>
+              )}
+            </View>
           )}
 
           {step.id === 'occasion' &&
@@ -271,6 +329,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 30, fontWeight: '600', color: colors.charcoal, marginBottom: 10 },
   subtitle: { fontSize: 16, lineHeight: 24, color: colors.muted, marginBottom: 24 },
   options: { gap: 10 },
+  locationFields: { gap: 14 },
+  field: { gap: 6 },
+  fieldLabel: { fontSize: 14, fontWeight: '600', color: colors.muted },
   option: {
     borderWidth: 1,
     borderColor: colors.border,

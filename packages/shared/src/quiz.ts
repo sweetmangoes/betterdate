@@ -5,6 +5,29 @@ export const audienceOptions = [
   { value: 'couple', label: 'Couple', description: 'Bring intentional time back into your relationship.' },
 ] as const
 
+export const meetingPreferenceOptions = [
+  {
+    value: 'midpoint',
+    label: 'Halfway between us',
+    description: 'Find spots roughly equal distance from both of you.',
+  },
+  {
+    value: 'near_me',
+    label: 'Near me',
+    description: 'Keep the date close to where you are.',
+  },
+  {
+    value: 'near_them',
+    label: 'Near them',
+    description: 'Plan around where your date is.',
+  },
+  {
+    value: 'neighborhood',
+    label: 'Specific neighborhood',
+    description: 'Pick a city or neighborhood and plan there.',
+  },
+] as const
+
 export const occasionOptions = [
   { value: 'weeknight', label: 'Weeknight' },
   { value: 'weekend', label: 'Weekend' },
@@ -39,24 +62,76 @@ export const vibeOptions = [
   { value: 'playful', label: 'Playful' },
 ] as const
 
-export const quizAnswersSchema = z.object({
-  audience: z.enum(['first_date', 'couple']),
-  location: z.string().trim().min(2, 'Enter a city or neighborhood').max(120),
-  occasion: z.enum(['weeknight', 'weekend', 'anniversary', 'just_because']),
-  budget: z.enum(['$', '$$', '$$$']),
-  time: z.enum(['morning', 'afternoon', 'evening', 'flexible']),
-  energy: z.enum(['low_key', 'mixed', 'adventurous']),
-  vibes: z
-    .array(z.enum(['cozy', 'outdoorsy', 'foodie', 'culture', 'playful']))
-    .min(1, 'Pick at least one vibe')
-    .max(2, 'Pick up to two vibes'),
-  constraints: z.string().trim().max(400).optional().default(''),
-})
+export const quizAnswersSchema = z
+  .object({
+    audience: z.enum(['first_date', 'couple']),
+    meetingPreference: z.enum(['midpoint', 'near_me', 'near_them', 'neighborhood']),
+    myLocation: z.string().trim().max(120).optional().default(''),
+    theirLocation: z.string().trim().max(120).optional().default(''),
+    location: z.string().trim().max(120).optional().default(''),
+    occasion: z.enum(['weeknight', 'weekend', 'anniversary', 'just_because']),
+    budget: z.enum(['$', '$$', '$$$']),
+    time: z.enum(['morning', 'afternoon', 'evening', 'flexible']),
+    energy: z.enum(['low_key', 'mixed', 'adventurous']),
+    vibes: z
+      .array(z.enum(['cozy', 'outdoorsy', 'foodie', 'culture', 'playful']))
+      .min(1, 'Pick at least one vibe')
+      .max(2, 'Pick up to two vibes'),
+    constraints: z.string().trim().max(400).optional().default(''),
+  })
+  .superRefine((data, ctx) => {
+    switch (data.meetingPreference) {
+      case 'midpoint':
+        if (data.myLocation.trim().length < 2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['myLocation'],
+            message: 'Enter your location',
+          })
+        }
+        if (data.theirLocation.trim().length < 2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['theirLocation'],
+            message: 'Enter their location',
+          })
+        }
+        break
+      case 'near_me':
+        if (data.myLocation.trim().length < 2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['myLocation'],
+            message: 'Enter your location',
+          })
+        }
+        break
+      case 'near_them':
+        if (data.theirLocation.trim().length < 2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['theirLocation'],
+            message: 'Enter their location',
+          })
+        }
+        break
+      case 'neighborhood':
+        if (data.location.trim().length < 2) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['location'],
+            message: 'Enter a city or neighborhood',
+          })
+        }
+        break
+    }
+  })
 
 export type QuizAnswers = z.infer<typeof quizAnswersSchema>
 
 export type QuizStepId =
   | 'audience'
+  | 'meeting'
   | 'location'
   | 'occasion'
   | 'budget'
@@ -76,9 +151,14 @@ export const quizSteps: Array<{
     subtitle: 'We’ll match the tone and risk level to your situation.',
   },
   {
+    id: 'meeting',
+    title: 'Where should you meet?',
+    subtitle: 'Halfway, near one of you, or a neighborhood you both like.',
+  },
+  {
     id: 'location',
-    title: 'Where should we plan?',
-    subtitle: 'City, neighborhood, or both — the more specific, the better.',
+    title: 'Add the locations',
+    subtitle: 'Be as specific as you can — city, neighborhood, or landmark.',
   },
   {
     id: 'occasion',
@@ -114,6 +194,9 @@ export const quizSteps: Array<{
 
 export const emptyQuizAnswers: QuizAnswers = {
   audience: 'first_date',
+  meetingPreference: 'neighborhood',
+  myLocation: '',
+  theirLocation: '',
   location: '',
   occasion: 'weekend',
   budget: '$$',
@@ -121,6 +204,20 @@ export const emptyQuizAnswers: QuizAnswers = {
   energy: 'mixed',
   vibes: [],
   constraints: '',
+}
+
+/** Human-readable area label for prompts and UI. */
+export function getMeetingAreaLabel(answers: QuizAnswers): string {
+  switch (answers.meetingPreference) {
+    case 'midpoint':
+      return `halfway between ${answers.myLocation.trim()} and ${answers.theirLocation.trim()}`
+    case 'near_me':
+      return `near ${answers.myLocation.trim()}`
+    case 'near_them':
+      return `near ${answers.theirLocation.trim()}`
+    case 'neighborhood':
+      return answers.location.trim()
+  }
 }
 
 export const PLAN_STORAGE_KEY = 'betterdate:plan'

@@ -1,4 +1,4 @@
-import type { QuizAnswers } from '@betterdate/shared'
+import { getMeetingAreaLabel, type QuizAnswers } from '@betterdate/shared'
 
 export type PlaceCandidate = {
   id: string
@@ -18,6 +18,13 @@ type GeocodeResult = {
   lat: number
   lng: number
   formattedAddress: string
+}
+
+type SearchCenter = {
+  lat: number
+  lng: number
+  radiusMeters: number
+  label: string
 }
 
 const PLACES_FIELD_MASK = [
@@ -52,49 +59,64 @@ function budgetToPriceLevels(budget: QuizAnswers['budget']): string[] | undefine
   }
 }
 
-function buildSearchQueries(answers: QuizAnswers): string[] {
-  const loc = answers.location.trim()
+/** Approximate distance in meters between two lat/lng points. */
+function haversineMeters(a: GeocodeResult, b: GeocodeResult): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const R = 6371000
+  const dLat = toRad(b.lat - a.lat)
+  const dLng = toRad(b.lng - a.lng)
+  const lat1 = toRad(a.lat)
+  const lat2 = toRad(b.lat)
+  const h =
+    Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(h))
+}
+
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, n))
+}
+
+function buildSearchQueries(answers: QuizAnswers, areaLabel: string): string[] {
   const queries: string[] = []
+  const inArea = areaLabel
 
   for (const vibe of answers.vibes) {
     switch (vibe) {
       case 'foodie':
-        queries.push(`best restaurants in ${loc}`)
+        queries.push(`best restaurants ${inArea}`)
         break
       case 'cozy':
-        queries.push(`cozy cafe or wine bar in ${loc}`)
+        queries.push(`cozy cafe or wine bar ${inArea}`)
         break
       case 'outdoorsy':
-        queries.push(`parks or scenic walking spots in ${loc}`)
+        queries.push(`parks or scenic walking spots ${inArea}`)
         break
       case 'culture':
-        queries.push(`museums galleries or cultural attractions in ${loc}`)
+        queries.push(`museums galleries or cultural attractions ${inArea}`)
         break
       case 'playful':
-        queries.push(`fun date activities or entertainment in ${loc}`)
+        queries.push(`fun date activities or entertainment ${inArea}`)
         break
     }
   }
 
   if (answers.time === 'evening' || answers.time === 'flexible') {
-    queries.push(`cocktail bars or dessert spots in ${loc}`)
+    queries.push(`cocktail bars or dessert spots ${inArea}`)
   }
   if (answers.time === 'morning' || answers.time === 'afternoon') {
-    queries.push(`brunch cafes or daytime date spots in ${loc}`)
+    queries.push(`brunch cafes or daytime date spots ${inArea}`)
   }
   if (answers.energy === 'adventurous') {
-    queries.push(`unique experiences or activities in ${loc}`)
+    queries.push(`unique experiences or activities ${inArea}`)
   }
   if (answers.energy === 'low_key') {
-    queries.push(`quiet intimate restaurants in ${loc}`)
+    queries.push(`quiet intimate restaurants ${inArea}`)
   }
 
-  // Always include a walkable food anchor
   if (!queries.some((q) => q.includes('restaurant') || q.includes('cafe'))) {
-    queries.push(`restaurants in ${loc}`)
+    queries.push(`restaurants ${inArea}`)
   }
 
-  // Dedupe and cap at 4 searches to control cost
   return [...new Set(queries)].slice(0, 4)
 }
 
@@ -130,6 +152,46 @@ async function geocodeLocation(location: string): Promise<GeocodeResult | null> 
   }
 }
 
+async function resolveSearchCenter(answers: QuizAnswers): Promise<SearchCenter | null> {
+  const label = getMeetingAreaLabel(answers)
+
+  switch (answers.meetingPreference) {
+    case 'neighborhood': {
+      const geo = await geocodeLocation(answers.location.trim())
+      if (!geo) return null
+      return { lat: geo.lat, lng: geo.lng, radiusMeters: 5500, label }
+    }
+    case 'near_me': {
+      const geo = await geocodeLocation(answers.myLocation.trim())
+      if (!geo) return null
+      return { lat: geo.lat, lng: geo.lng, radiusMeters: 6500, label }
+    }
+    case 'near_them': {
+      const geo = await geocodeLocation(answers.theirLocation.trim())
+      if (!geo) return null
+      return { lat: geo.lat, lng: geo.lng, radiusMeters: 6500, label }
+    }
+    case 'midpoint': {
+      const [mine, theirs] = await Promise.all([
+        geocodeLocation(answers.myLocation.trim()),
+        geocodeLocation(answers.theirLocation.trim()),
+      ])
+      if (!mine || !theirs) return null
+
+      const distance = haversineMeters(mine, theirs)
+      // Search around the midpoint with a radius that scales with how far apart you are
+      const radiusMeters = clamp(distance * 0.35, 3500, 14000)
+
+      return {
+        lat: (mine.lat + theirs.lat) / 2,
+        lng: (mine.lng + theirs.lng) / 2,
+        radiusMeters,
+        label,
+      }
+    }
+  }
+}
+
 type PlacesSearchResponse = {
   places?: Array<{
     id?: string
@@ -149,6 +211,7 @@ async function textSearch(params: {
   textQuery: string
   lat?: number
   lng?: number
+  radiusMeters?: number
   priceLevels?: string[]
 }): Promise<PlaceCandidate[]> {
   const body: Record<string, unknown> = {
@@ -161,7 +224,7 @@ async function textSearch(params: {
     body.locationBias = {
       circle: {
         center: { latitude: params.lat, longitude: params.lng },
-        radius: 8000,
+        radius: params.radiusMeters ?? 8000,
       },
     }
   }
@@ -217,17 +280,23 @@ async function textSearch(params: {
 }
 
 export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCandidate[]> {
-  const geocode = await geocodeLocation(answers.location)
-  const queries = buildSearchQueries(answers)
+  const center = await resolveSearchCenter(answers)
+  if (!center) {
+    throw new Error(
+      'Could not find those locations on the map. Try a clearer city, neighborhood, or landmark.',
+    )
+  }
+
+  const queries = buildSearchQueries(answers, center.label)
   const priceLevels = budgetToPriceLevels(answers.budget)
 
   const batches = await Promise.all(
     queries.map((textQuery) =>
       textSearch({
         textQuery,
-        lat: geocode?.lat,
-        lng: geocode?.lng,
-        // Only apply price filter to food/drink-ish queries to avoid wiping parks
+        lat: center.lat,
+        lng: center.lng,
+        radiusMeters: center.radiusMeters,
         priceLevels:
           /restaurant|cafe|bar|brunch|dessert|cocktail|wine/i.test(textQuery) ? priceLevels : undefined,
       }),
@@ -244,15 +313,4 @@ export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCa
   }
 
   return [...byId.values()].slice(0, 18)
-}
-
-export function formatCandidatesForPrompt(candidates: PlaceCandidate[]): string {
-  return candidates
-    .map((place, index) => {
-      const rating = place.rating != null ? `rating ${place.rating}` : 'no rating'
-      const price = place.priceLevel ? `, ${place.priceLevel}` : ''
-      const type = place.primaryType ?? place.types[0] ?? 'place'
-      return `${index + 1}. id=${place.id} | ${place.name} | ${place.address} | ${type} | ${rating}${price}`
-    })
-    .join('\n')
 }

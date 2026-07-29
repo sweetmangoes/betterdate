@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { QuizAnswers } from './quiz'
+import { getMeetingAreaLabel, type QuizAnswers } from './quiz'
 
 export const datePlanStopSchema = z.object({
   order: z.number().int().positive(),
@@ -71,6 +71,19 @@ export function buildPlanPrompt(answers: QuizAnswers, candidates?: PlanCandidate
   const audienceLabel = answers.audience === 'first_date' ? 'a first date' : 'an established couple'
   const vibeList = answers.vibes.join(', ')
   const constraints = answers.constraints?.trim() || 'None noted'
+  const areaLabel = getMeetingAreaLabel(answers)
+  const meetingNote = (() => {
+    switch (answers.meetingPreference) {
+      case 'midpoint':
+        return 'Prefer venues that work as a fair middle ground for both people (not biased to only one side).'
+      case 'near_me':
+        return 'Prefer venues convenient to the planner’s location.'
+      case 'near_them':
+        return 'Prefer venues convenient to the other person’s location.'
+      case 'neighborhood':
+        return 'Keep the plan walkable within the chosen neighborhood or area.'
+    }
+  })()
 
   if (candidates && candidates.length > 0) {
     const list = candidates
@@ -84,7 +97,10 @@ export function buildPlanPrompt(answers: QuizAnswers, candidates?: PlanCandidate
 
     return `You are Better Date, an expert local date planner.
 
-Plan ${audienceLabel} in or near: ${answers.location}.
+Plan ${audienceLabel} ${areaLabel}.
+
+Meeting preference: ${answers.meetingPreference}
+${meetingNote}
 
 Preferences:
 - Occasion: ${answers.occasion}
@@ -113,7 +129,10 @@ Rules:
 
   return `You are Better Date, an expert local date planner.
 
-Plan ${audienceLabel} in or near: ${answers.location}.
+Plan ${audienceLabel} ${areaLabel}.
+
+Meeting preference: ${answers.meetingPreference}
+${meetingNote}
 
 Preferences:
 - Occasion: ${answers.occasion}
@@ -124,7 +143,7 @@ Preferences:
 - Constraints: ${constraints}
 
 Rules:
-- Suggest 3–4 real-feeling named places (restaurants, cafes, parks, museums, bars, walks) that fit the location.
+- Suggest 3–4 real-feeling named places (restaurants, cafes, parks, museums, bars, walks) that fit the meeting area.
 - Prefer a walkable sequence in a sensible order for the chosen time of day.
 - Match budget and energy. For first dates, keep it low-pressure with easy conversation. For couples, make it intentional and thoughtful.
 - Do not invent confirmation of reservations, hours, or live availability.
