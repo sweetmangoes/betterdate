@@ -4,6 +4,20 @@ import {
   type PlanCandidate,
 } from '@betterdate/shared'
 
+/** Strip Google Place IDs the model sometimes leaks into user-facing copy. */
+export function scrubPlaceIdsFromCopy(text: string, candidates: PlanCandidate[]): string {
+  let result = text
+
+  for (const place of candidates) {
+    const escaped = place.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    result = result.replace(new RegExp(`\\s*\\(id:\\s*${escaped}\\)`, 'gi'), '')
+    result = result.replace(new RegExp(escaped, 'g'), place.name)
+  }
+
+  result = result.replace(/\s*\(id:\s*[A-Za-z0-9_-]+\)/gi, '')
+  return result.replace(/\s{2,}/g, ' ').trim()
+}
+
 export function enrichPlanFromCandidates(
   draft: GroundedPlanDraft,
   candidates: PlanCandidate[],
@@ -22,8 +36,8 @@ export function enrichPlanFromCandidates(
       neighborhood: place.neighborhood,
       category: stop.category,
       timeHint: stop.timeHint,
-      whyItFits: stop.whyItFits,
-      tip: stop.tip,
+      whyItFits: scrubPlaceIdsFromCopy(stop.whyItFits, candidates),
+      tip: scrubPlaceIdsFromCopy(stop.tip, candidates),
       placeId: place.id,
       address: place.address,
       mapsUrl: place.mapsUrl,
@@ -32,13 +46,15 @@ export function enrichPlanFromCandidates(
   })
 
   return {
-    title: draft.title,
-    summary: draft.summary,
+    title: scrubPlaceIdsFromCopy(draft.title, candidates),
+    summary: scrubPlaceIdsFromCopy(draft.summary, candidates),
     estimatedCost: draft.estimatedCost,
     duration: draft.duration,
     stops,
-    conversationStarters: draft.conversationStarters,
-    backupIdea: draft.backupIdea,
-    disclaimer: draft.disclaimer,
+    conversationStarters: draft.conversationStarters.map((s) =>
+      scrubPlaceIdsFromCopy(s, candidates),
+    ),
+    backupIdea: scrubPlaceIdsFromCopy(draft.backupIdea, candidates),
+    disclaimer: scrubPlaceIdsFromCopy(draft.disclaimer, candidates),
   }
 }
