@@ -14,6 +14,7 @@
     "build:web": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "npm run typecheck:shared",
     "typecheck:shared": "npm run typecheck --workspace=@betterdate/shared"
   },
   "prettier": {

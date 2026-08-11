@@ -12,5 +12,8 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ]
 config.resolver.disableHierarchicalLookup = true
+config.resolver.extraNodeModules = {
+  '@betterdate/shared': path.resolve(monorepoRoot, 'packages/shared'),
+}
 
 module.exports = config

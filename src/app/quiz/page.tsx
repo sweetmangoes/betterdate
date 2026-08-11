@@ -23,7 +23,7 @@ import {
   type QuizAnswers,
   type QuizStepId,
 } from '@/lib/quiz'
-import type { DatePlan } from '@/lib/plan'
+import { parsePlanApiResponse } from '@betterdate/shared'
 import { clsx } from 'clsx/lite'
 
 function OptionButton({
@@ -144,21 +144,14 @@ export default function QuizPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(parsed.data),
         })
-        const data = (await response.json()) as {
-          plan?: DatePlan
-          error?: string
-        }
+        const body: unknown = await response.json()
+        const { plan } = parsePlanApiResponse(response.ok, body)
 
-        if (!response.ok || !data.plan) {
-          setError(data.error ?? 'Something went wrong. Try again.')
-          return
-        }
-
-        sessionStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(data.plan))
+        sessionStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(plan))
         sessionStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(parsed.data))
         router.push('/plan')
-      } catch {
-        setError('Network error. Check your connection and try again.')
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Network error. Check your connection and try again.')
       }
     })
   }

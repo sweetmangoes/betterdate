@@ -1,17 +1,17 @@
-import { openai } from '@ai-sdk/openai'
-import { generateObject } from 'ai'
-import { NextResponse } from 'next/server'
-
-import { enrichPlanFromCandidates } from '@/lib/enrich-plan'
 import {
   buildPlanPrompt,
   datePlanSchema,
   groundedPlanDraftSchema,
   GROUNDED_PLAN_SYSTEM_PROMPT,
   PLAN_SYSTEM_PROMPT,
-} from '@/lib/plan'
+  quizAnswersSchema,
+} from '@betterdate/shared'
+import { openai } from '@ai-sdk/openai'
+import { generateObject } from 'ai'
+import { NextResponse } from 'next/server'
+
+import { enrichPlanFromCandidates } from '@/lib/enrich-plan'
 import { findPlaceCandidates } from '@/lib/places'
-import { quizAnswersSchema } from '@/lib/quiz'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60

@@ -1,5 +1,6 @@
 import {
   datePlanSchema,
+  parsePlanApiResponse,
   quizAnswersSchema,
   type DatePlan,
   type QuizAnswers,
@@ -16,11 +17,6 @@ export async function generatePlan(answers: QuizAnswers): Promise<DatePlan> {
     body: JSON.stringify(parsed),
   })
 
-  const data = (await response.json()) as { plan?: unknown; error?: string }
-
-  if (!response.ok || !data.plan) {
-    throw new Error(data.error ?? 'Could not generate a date plan.')
-  }
-
-  return datePlanSchema.parse(data.plan)
+  const body: unknown = await response.json()
+  return parsePlanApiResponse(response.ok, body).plan
 }

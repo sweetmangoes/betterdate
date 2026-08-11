@@ -17,7 +17,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 | AI date plan | OpenAI `gpt-4o-mini` structured itinerary via `/api/plan` |
 | Plan result page (web) | Timeline, conversation starters, backup idea; `sessionStorage` |
 | Marketing landing + About | Mission/vision; how it works; who it’s for |
-| Monorepo + shared schemas | `packages/shared` for quiz/plan Zod types |
+| Monorepo + shared schemas | `@betterdate/shared`: quiz + plan Zod + `/api/plan` response; web/mobile import same package |
 | iOS Expo app (SDK 54) | Home → quiz → plan; calls deployed API; AsyncStorage; Expo Go compatible |
 | Vercel deploy | Public HTTPS API for mobile |
 | Google Places grounding | Places-first search → LLM picks only from real candidates; Maps links on plan |
@@ -243,7 +243,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 - Deploy Next.js to Vercel (HTTPS API URL for the app)
 - Apple Developer account; Expo + EAS set up (iOS)
 - Scaffold Expo app (`apps/mobile`): splash → quiz shell → plan shell
-- Extract shared Zod schemas so web/iOS don’t drift
+- Extract shared Zod schemas so web/iOS don’t drift — **shipped** (`packages/shared`)
 - Light SEO: `robots.ts`, `sitemap.ts`, metadata — **shipped**
 - First TestFlight build (even if UI is rough)
 
@@ -280,7 +280,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 - Vercel (or similar) production URL
 - `OPENAI_API_KEY` + `GOOGLE_MAPS_API_KEY`
 
-**Touchpoints:** `apps/mobile` (Expo, iOS focus), `packages/shared` (quiz/plan schemas), `src/lib/places.ts` (upcoming), `src/app/api/plan/route.ts`, web `/quiz` + `/plan`
+**Touchpoints:** `apps/mobile` (Expo, iOS focus), `packages/shared` (quiz/plan/api schemas), `src/lib/places.ts`, `src/app/api/plan/route.ts`, web `/quiz` + `/plan`
 
 
 ---

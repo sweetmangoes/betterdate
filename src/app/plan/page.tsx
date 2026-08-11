@@ -7,8 +7,7 @@ import { ButtonLink, SoftButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Heading } from '@/components/elements/heading'
 import { Text } from '@/components/elements/text'
-import { datePlanSchema, type DatePlan } from '@/lib/plan'
-import { PLAN_STORAGE_KEY } from '@/lib/quiz'
+import { datePlanSchema, PLAN_STORAGE_KEY, type DatePlan } from '@betterdate/shared'
 
 const categoryLabels: Record<DatePlan['stops'][number]['category'], string> = {
   food: 'Food',
