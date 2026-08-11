@@ -314,3 +314,67 @@ export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCa
 
   return [...byId.values()].slice(0, 18)
 }
+
+export type LocationSuggestion = {
+  placeId: string
+  text: string
+  mainText: string
+  secondaryText: string
+}
+
+type AutocompleteResponse = {
+  suggestions?: Array<{
+    placePrediction?: {
+      placeId?: string
+      text?: { text?: string }
+      structuredFormat?: {
+        mainText?: { text?: string }
+        secondaryText?: { text?: string }
+      }
+    }
+  }>
+}
+
+/** Autocomplete cities, neighborhoods, and regions as the user types. */
+export async function autocompletePlaces(input: string): Promise<LocationSuggestion[]> {
+  const trimmed = input.trim()
+  if (trimmed.length < 2) return []
+
+  const response = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': getApiKey(),
+    },
+    body: JSON.stringify({
+      input: trimmed,
+      languageCode: 'en',
+      // Regions: cities, neighborhoods, postal codes, admin areas — not businesses
+      includedPrimaryTypes: ['(regions)'],
+    }),
+  })
+
+  if (!response.ok) {
+    const text = await response.text()
+    console.error('Places autocomplete failed', response.status, text)
+    throw new Error('Location suggestions failed. Check GOOGLE_MAPS_API_KEY and Places API (New).')
+  }
+
+  const data = (await response.json()) as AutocompleteResponse
+
+  return (data.suggestions ?? [])
+    .map((suggestion) => suggestion.placePrediction)
+    .filter((prediction): prediction is NonNullable<typeof prediction> => Boolean(prediction?.placeId && prediction.text?.text))
+    .map((prediction) => {
+      const text = prediction.text!.text!
+      const mainText = prediction.structuredFormat?.mainText?.text ?? text.split(',')[0] ?? text
+      const secondaryText = prediction.structuredFormat?.secondaryText?.text ?? ''
+      return {
+        placeId: prediction.placeId!,
+        text,
+        mainText,
+        secondaryText,
+      } satisfies LocationSuggestion
+    })
+    .slice(0, 6)
+}

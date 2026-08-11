@@ -232,7 +232,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 | Shared Zod schemas (`quiz` / `plan`) | Web + iOS stay in sync |
 | AI + Places only on server | Keys never in the IPA |
 | Design quiz/plan for phone first | Web follows; thumb-friendly |
-| Ship a TestFlight build every week | Catch signing/review issues early |
+| Ship TestFlight in demo week | Catch signing/review issues before you show it; Expo Go is fine until then |
 
 #### Week-by-week plan
 
@@ -241,11 +241,11 @@ Status key: `shipped` · `next` · `planned` · `later`
 **Days 1–7 — Foundation**
 
 - Deploy Next.js to Vercel (HTTPS API URL for the app)
-- Apple Developer account; Expo + EAS set up (iOS)
-- Scaffold Expo app (`apps/mobile`): splash → quiz shell → plan shell
+- Scaffold Expo app (`apps/mobile`): splash → quiz shell → plan shell — **shipped**
 - Extract shared Zod schemas so web/iOS don’t drift — **shipped** (`packages/shared`)
 - Light SEO: `robots.ts`, `sitemap.ts`, metadata — **shipped**
-- First TestFlight build (even if UI is rough)
+- Develop on **Expo Go / Simulator** (no TestFlight required yet)
+- Apple Developer account — **you have this**; EAS + TestFlight deferred to ship week
 
 **Days 8–14 — iOS core + Places start**
 
@@ -264,6 +264,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 **Days 22–30 — Ship the demo**
 
+- Expo + EAS set up (iOS); first TestFlight build
 - TestFlight with real testers; fix crashes
 - Privacy policy / listing copy aligned with AI + Places
 - Web: quiz/plan polish to match iOS flows (not a redesign)

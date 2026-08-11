@@ -6,6 +6,7 @@ import { useState, useTransition } from 'react'
 import { Button, SoftButton } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Heading } from '@/components/elements/heading'
+import { LocationAutocomplete } from '@/components/elements/location-autocomplete'
 import { Text } from '@/components/elements/text'
 import {
   audienceOptions,
@@ -205,13 +206,13 @@ export default function QuizPage() {
                   <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
                     Your location
                   </span>
-                  <input
-                    type="text"
+                  <LocationAutocomplete
                     value={answers.myLocation}
-                    onChange={(e) => update('myLocation', e.target.value)}
+                    onChange={(value) => update('myLocation', value)}
                     placeholder="e.g. Astoria, Queens"
                     className={inputClassName}
                     autoFocus
+                    aria-label="Your location"
                   />
                 </label>
               )}
@@ -221,13 +222,13 @@ export default function QuizPage() {
                   <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
                     Their location
                   </span>
-                  <input
-                    type="text"
+                  <LocationAutocomplete
                     value={answers.theirLocation}
-                    onChange={(e) => update('theirLocation', e.target.value)}
+                    onChange={(value) => update('theirLocation', value)}
                     placeholder="e.g. Park Slope, Brooklyn"
                     className={inputClassName}
                     autoFocus={answers.meetingPreference === 'near_them'}
+                    aria-label="Their location"
                   />
                 </label>
               )}
@@ -236,13 +237,13 @@ export default function QuizPage() {
                   <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
                     Neighborhood or city
                   </span>
-                  <input
-                    type="text"
+                  <LocationAutocomplete
                     value={answers.location}
-                    onChange={(e) => update('location', e.target.value)}
+                    onChange={(value) => update('location', value)}
                     placeholder="e.g. Williamsburg, Brooklyn"
                     className={inputClassName}
                     autoFocus
+                    aria-label="Neighborhood or city"
                   />
                 </label>
               )}
