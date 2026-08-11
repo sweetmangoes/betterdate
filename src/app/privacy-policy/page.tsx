@@ -1,6 +1,19 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { DocumentCentered } from '@/components/sections/document-centered'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How Better Date collects, uses, and protects information when you use the service.',
+  alternates: {
+    canonical: '/privacy-policy',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function Page() {
   return (

@@ -6,9 +6,18 @@ import { CallToActionSimpleCentered } from '@/components/sections/call-to-action
 import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
 
 export const metadata: Metadata = {
-  title: 'About — Better Date',
+  title: 'About',
   description:
     'Better Date’s mission is to eliminate bad dates by helping plan thoughtful, intentional dates from your preferences. Our vision is a world without bad dates.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'About — Better Date',
+    description:
+      'Better Date’s mission is to eliminate bad dates by helping plan thoughtful, intentional dates from your preferences.',
+    url: '/about',
+  },
 }
 
 export default function Page() {

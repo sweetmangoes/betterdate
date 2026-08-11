@@ -10,13 +10,40 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import { defaultDescription, getSiteUrl, siteName } from '@/lib/site'
 import type { Metadata } from 'next'
 import './globals.css'
 
+const siteUrl = getSiteUrl()
+
 export const metadata: Metadata = {
-  title: 'Better Date — AI date plans for first dates and couples',
-  description:
-    'Eliminate bad dates. Plan thoughtful, intentional nights from your preferences — toward a world without bad dates.',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: `${siteName} — AI date plans for first dates and couples`,
+    template: `%s — ${siteName}`,
+  },
+  description: defaultDescription,
+  applicationName: siteName,
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: siteUrl,
+    siteName,
+    title: `${siteName} — AI date plans for first dates and couples`,
+    description: defaultDescription,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${siteName} — AI date plans for first dates and couples`,
+    description: defaultDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 function BetterDateMark({ className }: { className?: string }) {

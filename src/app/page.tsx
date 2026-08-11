@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { ArrowNarrowRightIcon } from '@/components/icons/arrow-narrow-right-icon'
 import { HeartPulseIcon } from '@/components/icons/heart-pulse-icon'
@@ -7,6 +9,17 @@ import { CallToActionSimpleCentered } from '@/components/sections/call-to-action
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
 import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
 import { Section } from '@/components/elements/section'
+import { defaultDescription } from '@/lib/site'
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Better Date — AI date plans for first dates and couples',
+  },
+  description: defaultDescription,
+  alternates: {
+    canonical: '/',
+  },
+}
 
 export default function Page() {
   return (

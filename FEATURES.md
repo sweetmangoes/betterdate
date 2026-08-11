@@ -22,6 +22,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 | Vercel deploy | Public HTTPS API for mobile |
 | Google Places grounding | Places-first search → LLM picks only from real candidates; Maps links on plan |
 | Meeting location modes | Halfway (midpoint), near me, near them, or a specific neighborhood |
+| Light SEO | `robots.ts`, `sitemap.ts`, metadataBase / OG / per-page titles; `/plan` noindex |
 
 ---
 
@@ -165,26 +166,27 @@ Status key: `shipped` · `next` · `planned` · `later`
 
 ---
 
-### 6. Search indexing & SEO basics — `planned`
+### 6. Search indexing & SEO basics — `shipped` (light) · Search Console `later`
 
 **Why:** The app won’t show up in Google unless we make it crawlable and submit it for indexing. Marketing pages + blog only help if search engines can find them.
 
-**Must-do checklist:**
-
+**Shipped:**
 | Item | Notes |
 |------|--------|
-| Public marketing routes indexable | `/`, `/blog`, `/blog/[slug]`, `/about` — allow crawling |
-| Do **not** index ephemeral plans | `/plan` (and quiz mid-flow if needed): `noindex` — personal/session content |
-| `robots.txt` | Allow site; point to sitemap |
-| `sitemap.xml` | Landing, blog index, all posts; regenerate when posts ship |
-| Metadata | Unique `title` / `description` / Open Graph per page |
-| Google Search Console | Verify property, submit sitemap, request indexing for key URLs |
-| Canonical URLs | Stable production domain once deployed |
-| Performance / Core Web Vitals | Helps ranking; keep landing + blog fast |
+| `robots.ts` | Allows `/`; disallows `/plan` and `/api/`; points to sitemap |
+| `sitemap.ts` | `/`, `/about`, `/quiz`, `/privacy-policy` (blog URLs when posts ship) |
+| Root + page metadata | `metadataBase`, title template, Open Graph / Twitter, canonicals |
+| `/plan` noindex | Session-specific plan results stay out of search |
 
-**Needs:** Production URL (Vercel or similar), Search Console access, sitemap route (`src/app/sitemap.ts`, `src/app/robots.ts`).
+**Still todo:**
+| Item | Notes |
+|------|--------|
+| Google Search Console | Verify property, submit sitemap, request indexing |
+| Custom domain / `NEXT_PUBLIC_SITE_URL` | Set canonical production URL in Vercel env |
+| Blog URLs in sitemap | When blog ships |
+| Performance / Core Web Vitals | Keep landing fast |
 
-**Touchpoints:** `layout.tsx` metadata, per-page `metadata` / `generateMetadata`, `robots.ts`, `sitemap.ts`
+**Touchpoints:** `src/lib/site.ts`, `src/app/robots.ts`, `src/app/sitemap.ts`, `layout.tsx` + page/layout metadata
 
 ---
 
@@ -242,7 +244,7 @@ Status key: `shipped` · `next` · `planned` · `later`
 - Apple Developer account; Expo + EAS set up (iOS)
 - Scaffold Expo app (`apps/mobile`): splash → quiz shell → plan shell
 - Extract shared Zod schemas so web/iOS don’t drift
-- Light SEO: `robots.ts`, `sitemap.ts`, metadata (fast win while deploying)
+- Light SEO: `robots.ts`, `sitemap.ts`, metadata — **shipped**
 - First TestFlight build (even if UI is rough)
 
 **Days 8–14 — iOS core + Places start**
@@ -361,6 +363,7 @@ EventKit calendar + invitations, Sign in with Apple, StoreKit, Share Sheet, MapK
 ```
 OPENAI_API_KEY=           # shipped
 GOOGLE_MAPS_API_KEY=      # Places + Geocoding
+NEXT_PUBLIC_SITE_URL=     # canonical public URL for sitemap/OG (falls back to Vercel URL)
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=  # server only — usage / webhooks
