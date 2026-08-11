@@ -3,6 +3,8 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { clsx } from 'clsx/lite'
 
+import type { BrowserCoords } from '@/hooks/use-browser-location'
+
 type Suggestion = {
   placeId: string
   text: string
@@ -17,6 +19,8 @@ type LocationAutocompleteProps = {
   className?: string
   autoFocus?: boolean
   'aria-label'?: string
+  /** Browser coordinates used to bias suggestions toward nearby places. */
+  bias?: BrowserCoords | null
 }
 
 const DEBOUNCE_MS = 250
@@ -28,6 +32,7 @@ export function LocationAutocomplete({
   className,
   autoFocus,
   'aria-label': ariaLabel,
+  bias = null,
 }: LocationAutocompleteProps) {
   const listboxId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -55,10 +60,14 @@ export function LocationAutocomplete({
     const timer = window.setTimeout(async () => {
       setLoading(true)
       try {
-        const response = await fetch(
-          `/api/places/autocomplete?q=${encodeURIComponent(query)}`,
-          { signal: controller.signal },
-        )
+        const params = new URLSearchParams({ q: query })
+        if (bias) {
+          params.set('lat', String(bias.lat))
+          params.set('lng', String(bias.lng))
+        }
+        const response = await fetch(`/api/places/autocomplete?${params}`, {
+          signal: controller.signal,
+        })
         if (!response.ok) {
           setSuggestions([])
           return
@@ -82,7 +91,7 @@ export function LocationAutocomplete({
       controller.abort()
       window.clearTimeout(timer)
     }
-  }, [value])
+  }, [value, bias?.lat, bias?.lng])
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {

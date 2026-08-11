@@ -24,6 +24,7 @@ import {
   type QuizAnswers,
   type QuizStepId,
 } from '@/lib/quiz'
+import { useBrowserLocation } from '@/hooks/use-browser-location'
 import { parsePlanApiResponse } from '@betterdate/shared'
 import { clsx } from 'clsx/lite'
 
@@ -100,6 +101,9 @@ export default function QuizPage() {
   const step = quizSteps[stepIndex]
   const isLast = stepIndex === quizSteps.length - 1
   const progress = ((stepIndex + 1) / quizSteps.length) * 100
+  const { coords, status: locationStatus, requestPermission } = useBrowserLocation(
+    step.id === 'location',
+  )
 
   function update<K extends keyof QuizAnswers>(key: K, value: QuizAnswers[K]) {
     setAnswers((prev) => ({ ...prev, [key]: value }))
@@ -213,6 +217,7 @@ export default function QuizPage() {
                     className={inputClassName}
                     autoFocus
                     aria-label="Your location"
+                    bias={coords}
                   />
                 </label>
               )}
@@ -229,6 +234,7 @@ export default function QuizPage() {
                     className={inputClassName}
                     autoFocus={answers.meetingPreference === 'near_them'}
                     aria-label="Their location"
+                    bias={coords}
                   />
                 </label>
               )}
@@ -244,8 +250,26 @@ export default function QuizPage() {
                     className={inputClassName}
                     autoFocus
                     aria-label="Neighborhood or city"
+                    bias={coords}
                   />
                 </label>
+              )}
+              {locationStatus === 'denied' && (
+                <p className="text-sm/6 text-mauve-600 dark:text-mauve-400">
+                  Allow location access for better nearby suggestions.{' '}
+                  <button
+                    type="button"
+                    onClick={() => void requestPermission()}
+                    className="font-medium text-rose-700 underline underline-offset-2 dark:text-rose-300"
+                  >
+                    Try again
+                  </button>
+                </p>
+              )}
+              {locationStatus === 'pending' && (
+                <p className="text-sm/6 text-mauve-600 dark:text-mauve-400">
+                  Finding your location for better suggestions…
+                </p>
               )}
             </>
           )}

@@ -327,6 +327,7 @@ type AutocompleteResponse = {
     placePrediction?: {
       placeId?: string
       text?: { text?: string }
+      types?: string[]
       structuredFormat?: {
         mainText?: { text?: string }
         secondaryText?: { text?: string }
@@ -335,10 +336,65 @@ type AutocompleteResponse = {
   }>
 }
 
-/** Autocomplete cities, neighborhoods, and regions as the user types. */
-export async function autocompletePlaces(input: string): Promise<LocationSuggestion[]> {
+/** Geographic / address types — keep streets & neighborhoods, drop restaurants etc. */
+const GEOGRAPHIC_TYPES = new Set([
+  'geocode',
+  'political',
+  'locality',
+  'sublocality',
+  'sublocality_level_1',
+  'sublocality_level_2',
+  'sublocality_level_3',
+  'neighborhood',
+  'colloquial_area',
+  'administrative_area_level_1',
+  'administrative_area_level_2',
+  'administrative_area_level_3',
+  'administrative_area_level_4',
+  'postal_code',
+  'postal_code_prefix',
+  'route',
+  'street_address',
+  'premise',
+  'subpremise',
+  'intersection',
+])
+
+function isGeographicPrediction(types: string[] | undefined): boolean {
+  if (!types?.length) return true
+  return types.some((type) => GEOGRAPHIC_TYPES.has(type))
+}
+
+export type AutocompleteBias = {
+  lat: number
+  lng: number
+  /** Search bias radius in meters. Default covers a metro area (~50km). */
+  radiusMeters?: number
+}
+
+/** Autocomplete neighborhoods, towns, and streets, biased to the user's location. */
+export async function autocompletePlaces(
+  input: string,
+  bias?: AutocompleteBias | null,
+): Promise<LocationSuggestion[]> {
   const trimmed = input.trim()
   if (trimmed.length < 2) return []
+
+  const body: Record<string, unknown> = {
+    input: trimmed,
+    languageCode: 'en',
+  }
+
+  if (bias) {
+    body.locationBias = {
+      circle: {
+        center: { latitude: bias.lat, longitude: bias.lng },
+        // Wide enough for suburbs like Orleans relative to downtown Ottawa
+        radius: bias.radiusMeters ?? 50_000,
+      },
+    }
+    body.origin = { latitude: bias.lat, longitude: bias.lng }
+  }
 
   const response = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
     method: 'POST',
@@ -346,12 +402,7 @@ export async function autocompletePlaces(input: string): Promise<LocationSuggest
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': getApiKey(),
     },
-    body: JSON.stringify({
-      input: trimmed,
-      languageCode: 'en',
-      // Regions: cities, neighborhoods, postal codes, admin areas — not businesses
-      includedPrimaryTypes: ['(regions)'],
-    }),
+    body: JSON.stringify(body),
   })
 
   if (!response.ok) {
@@ -362,9 +413,11 @@ export async function autocompletePlaces(input: string): Promise<LocationSuggest
 
   const data = (await response.json()) as AutocompleteResponse
 
-  return (data.suggestions ?? [])
+  const mapped = (data.suggestions ?? [])
     .map((suggestion) => suggestion.placePrediction)
-    .filter((prediction): prediction is NonNullable<typeof prediction> => Boolean(prediction?.placeId && prediction.text?.text))
+    .filter((prediction): prediction is NonNullable<typeof prediction> =>
+      Boolean(prediction?.placeId && prediction.text?.text),
+    )
     .map((prediction) => {
       const text = prediction.text!.text!
       const mainText = prediction.structuredFormat?.mainText?.text ?? text.split(',')[0] ?? text
@@ -374,7 +427,17 @@ export async function autocompletePlaces(input: string): Promise<LocationSuggest
         text,
         mainText,
         secondaryText,
-      } satisfies LocationSuggestion
+        types: prediction.types ?? [],
+      }
     })
-    .slice(0, 6)
+
+  const geographic = mapped.filter((item) => isGeographicPrediction(item.types))
+  const preferred = geographic.length > 0 ? geographic : mapped
+
+  return preferred.slice(0, 6).map(({ placeId, text, mainText, secondaryText }) => ({
+    placeId,
+    text,
+    mainText,
+    secondaryText,
+  }))
 }
