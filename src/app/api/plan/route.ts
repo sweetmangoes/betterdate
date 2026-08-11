@@ -106,8 +106,16 @@ export async function POST(request: Request) {
       )
     }
 
-    if (message.includes('GOOGLE_MAPS_API_KEY') || message.includes('Google Places')) {
-      return NextResponse.json({ error: message }, { status: 500 })
+    if (message.includes('GOOGLE_MAPS_API_KEY') || message.includes('Google Places') || message.includes('look up places nearby')) {
+      return NextResponse.json(
+        {
+          error:
+            message.includes('look up places nearby')
+              ? message
+              : 'We could not look up places nearby right now. Please try generating again.',
+        },
+        { status: 500 },
+      )
     }
 
     return NextResponse.json(

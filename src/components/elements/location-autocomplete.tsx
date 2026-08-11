@@ -42,6 +42,9 @@ export function LocationAutocomplete({
   const [loading, setLoading] = useState(false)
   const skipFetchRef = useRef(false)
 
+  const biasLat = bias?.lat
+  const biasLng = bias?.lng
+
   useEffect(() => {
     if (skipFetchRef.current) {
       skipFetchRef.current = false
@@ -61,9 +64,9 @@ export function LocationAutocomplete({
       setLoading(true)
       try {
         const params = new URLSearchParams({ q: query })
-        if (bias) {
-          params.set('lat', String(bias.lat))
-          params.set('lng', String(bias.lng))
+        if (biasLat != null && biasLng != null) {
+          params.set('lat', String(biasLat))
+          params.set('lng', String(biasLng))
         }
         const response = await fetch(`/api/places/autocomplete?${params}`, {
           signal: controller.signal,
@@ -91,7 +94,7 @@ export function LocationAutocomplete({
       controller.abort()
       window.clearTimeout(timer)
     }
-  }, [value, bias?.lat, bias?.lng])
+  }, [value, biasLat, biasLng])
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {

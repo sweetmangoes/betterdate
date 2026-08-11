@@ -224,7 +224,8 @@ async function textSearch(params: {
     body.locationBias = {
       circle: {
         center: { latitude: params.lat, longitude: params.lng },
-        radius: params.radiusMeters ?? 8000,
+        // Places Text Search (New) caps circle radius at 50km
+        radius: Math.min(params.radiusMeters ?? 8000, 50_000),
       },
     }
   }
@@ -245,8 +246,14 @@ async function textSearch(params: {
 
   if (!response.ok) {
     const text = await response.text()
-    console.error('Places text search failed', response.status, text)
-    throw new Error('Google Places search failed. Check GOOGLE_MAPS_API_KEY and that Places API (New) is enabled.')
+    console.error('Places text search failed', response.status, text, params.textQuery)
+
+    // Retry once without price filter — invalid priceLevels can 400 the whole request
+    if (params.priceLevels?.length) {
+      return textSearch({ ...params, priceLevels: undefined })
+    }
+
+    throw new Error(`Google Places search failed (${response.status}).`)
   }
 
   const data = (await response.json()) as PlacesSearchResponse
@@ -254,6 +261,7 @@ async function textSearch(params: {
   return (data.places ?? [])
     .filter((place) => place.id && place.displayName?.text)
     .map((place) => {
+      const id = normalizePlaceId(place.id!)
       const address = place.formattedAddress ?? place.shortFormattedAddress ?? ''
       const neighborhood =
         place.shortFormattedAddress?.split(',')[0]?.trim() ||
@@ -262,7 +270,7 @@ async function textSearch(params: {
         'Nearby'
 
       return {
-        id: place.id!,
+        id,
         name: place.displayName!.text!,
         address,
         neighborhood,
@@ -272,11 +280,16 @@ async function textSearch(params: {
         priceLevel: place.priceLevel,
         mapsUrl:
           place.googleMapsUri ??
-          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName!.text!)}&query_place_id=${place.id}`,
+          `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName!.text!)}&query_place_id=${id}`,
         primaryType: place.primaryType,
         types: place.types ?? [],
       } satisfies PlaceCandidate
     })
+}
+
+/** Strip `places/` prefix the model (or API resource names) sometimes include. */
+export function normalizePlaceId(placeId: string): string {
+  return placeId.trim().replace(/^places\//, '')
 }
 
 export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCandidate[]> {
@@ -290,7 +303,7 @@ export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCa
   const queries = buildSearchQueries(answers, center.label)
   const priceLevels = budgetToPriceLevels(answers.budget)
 
-  const batches = await Promise.all(
+  const settled = await Promise.allSettled(
     queries.map((textQuery) =>
       textSearch({
         textQuery,
@@ -304,12 +317,24 @@ export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCa
   )
 
   const byId = new Map<string, PlaceCandidate>()
-  for (const batch of batches) {
-    for (const place of batch) {
-      if (!byId.has(place.id)) {
-        byId.set(place.id, place)
+  let failures = 0
+  for (const result of settled) {
+    if (result.status === 'fulfilled') {
+      for (const place of result.value) {
+        if (!byId.has(place.id)) byId.set(place.id, place)
       }
+    } else {
+      failures += 1
+      console.error('Places query failed', result.reason)
     }
+  }
+
+  if (byId.size === 0) {
+    throw new Error(
+      failures > 0
+        ? 'We could not look up places nearby right now. Please try generating again.'
+        : 'Could not find enough local places for that area. Try a more specific city or neighborhood.',
+    )
   }
 
   return [...byId.values()].slice(0, 18)
