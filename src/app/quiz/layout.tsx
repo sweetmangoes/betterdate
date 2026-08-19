@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
 
+import { getProduct } from '@/lib/product'
+
+const product = getProduct()
+
 export const metadata: Metadata = {
-  title: 'Plan a date',
-  description:
-    'Answer a short preference quiz and get a thoughtful local date plan for a first date or couples night.',
+  title: product.quizPageTitle,
+  description: product.quizPageDescription,
   openGraph: {
-    title: 'Plan a date — Better Date',
-    description:
-      'Answer a short preference quiz and get a thoughtful local date plan for a first date or couples night.',
+    title: `${product.quizPageTitle} — ${product.name}`,
+    description: product.quizPageDescription,
   },
 }
 

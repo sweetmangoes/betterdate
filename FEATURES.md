@@ -365,6 +365,7 @@ EventKit calendar + invitations, Sign in with Apple, StoreKit, Share Sheet, MapK
 OPENAI_API_KEY=           # shipped
 GOOGLE_MAPS_API_KEY=      # Places + Geocoding
 NEXT_PUBLIC_SITE_URL=     # canonical public URL for sitemap/OG (falls back to Vercel URL)
+NEXT_PUBLIC_PRODUCT=      # `date` (default, Better Date) or `friends` (Better Hang sibling deploy)
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=  # server only — usage / webhooks
@@ -375,3 +376,19 @@ RESEND_API_KEY=           # optional email invites
 ```
 
 Update this file when priorities change or a feature ships.
+
+---
+
+## Sibling product: Better Hang (`friends`) — `shipped` (web)
+
+Same repo and Places → LLM itinerary engine as Better Date. A second Vercel project sets `NEXT_PUBLIC_PRODUCT=friends` (and its own `NEXT_PUBLIC_SITE_URL`). Working name: **Better Hang**.
+
+| What | Notes |
+|------|--------|
+| Shared | `/api/plan`, Google Places, plan JSON, web quiz/plan shells |
+| Product config | `@betterdate/shared` `getProduct()` — brand, quiz, prompts, Places queries, storage keys |
+| Friends quiz | Pair (same four meeting modes) or group (3–8 people; neighborhood or near-me only) |
+| Local | `npm run dev:friends` |
+| iOS | Later — keep Better Date on TestFlight first; then an EAS profile / bundle id |
+
+Do **not** add Friends as an audience inside Better Date, and do **not** fork the repo.

@@ -2,10 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { DocumentCentered } from '@/components/sections/document-centered'
+import { getProduct } from '@/lib/product'
+
+const product = getProduct()
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'How Better Date collects, uses, and protects information when you use the service.',
+  description: product.privacyPageDescription,
   alternates: {
     canonical: '/privacy-policy',
   },

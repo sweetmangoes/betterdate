@@ -10,16 +10,18 @@ import {
   NavbarLogo,
   NavbarWithLinksActionsAndCenteredLogo,
 } from '@/components/sections/navbar-with-links-actions-and-centered-logo'
+import { getProduct, getProductId } from '@/lib/product'
 import { defaultDescription, getSiteUrl, siteName } from '@/lib/site'
 import type { Metadata } from 'next'
 import './globals.css'
 
+const product = getProduct()
 const siteUrl = getSiteUrl()
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${siteName} — AI date plans for first dates and couples`,
+    default: product.titleDefault,
     template: `%s — ${siteName}`,
   },
   description: defaultDescription,
@@ -32,12 +34,12 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: siteUrl,
     siteName,
-    title: `${siteName} — AI date plans for first dates and couples`,
+    title: product.titleDefault,
     description: defaultDescription,
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${siteName} — AI date plans for first dates and couples`,
+    title: product.titleDefault,
     description: defaultDescription,
   },
   robots: {
@@ -46,11 +48,11 @@ export const metadata: Metadata = {
   },
 }
 
-function BetterDateMark({ className }: { className?: string }) {
+function ProductMark({ className }: { className?: string }) {
   return (
     <span className={className}>
       <span className="font-display text-xl font-medium tracking-tight text-mauve-950 dark:text-white">
-        Better Date
+        {product.name}
       </span>
     </span>
   )
@@ -62,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-product={getProductId()}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -79,13 +81,13 @@ export default function RootLayout({
               <NavbarLink href="/#how-it-works">How it works</NavbarLink>
               <NavbarLink href="/about">About</NavbarLink>
               <NavbarLink href="/quiz" className="sm:hidden">
-                Plan a date
+                {product.ctaLabel}
               </NavbarLink>
             </>
           }
           logo={
             <NavbarLogo href="/">
-              <BetterDateMark />
+              <ProductMark />
             </NavbarLogo>
           }
           actions={
@@ -93,7 +95,7 @@ export default function RootLayout({
               <PlainButtonLink href="/#how-it-works" className="max-sm:hidden">
                 How it works
               </PlainButtonLink>
-              <ButtonLink href="/quiz">Plan a date</ButtonLink>
+              <ButtonLink href="/quiz">{product.ctaLabel}</ButtonLink>
             </>
           }
         />
@@ -105,7 +107,7 @@ export default function RootLayout({
           links={
             <>
               <FooterCategory title="Product">
-                <FooterLink href="/quiz">Plan a date</FooterLink>
+                <FooterLink href="/quiz">{product.ctaLabel}</FooterLink>
                 <FooterLink href="/#how-it-works">How it works</FooterLink>
               </FooterCategory>
               <FooterCategory title="Company">
@@ -117,7 +119,7 @@ export default function RootLayout({
               </FooterCategory>
             </>
           }
-          fineprint="© 2026 Better Date. Venue suggestions are AI-generated — always verify hours and reservations."
+          fineprint={product.footerFineprint}
         />
       </body>
     </html>

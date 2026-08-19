@@ -49,6 +49,31 @@
         radial-gradient(ellipse 50% 35% at 90% 5%, oklch(25% 0.03 50 / 0.4), transparent),
         linear-gradient(180deg, var(--color-mauve-950), var(--color-mauve-900));
     }
+
+    &[data-product='friends'] {
+      --color-rose-50: oklch(97% 0.015 210);
+      --color-rose-100: oklch(94% 0.03 210);
+      --color-rose-200: oklch(88% 0.05 210);
+      --color-rose-300: oklch(78% 0.08 210);
+      --color-rose-400: oklch(68% 0.11 210);
+      --color-rose-500: oklch(58% 0.12 210);
+      --color-rose-600: oklch(50% 0.12 210);
+      --color-rose-700: oklch(42% 0.11 210);
+      --color-rose-800: oklch(35% 0.09 210);
+      --color-rose-900: oklch(28% 0.07 210);
+
+      background-image:
+        radial-gradient(ellipse 80% 50% at 10% -10%, oklch(88% 0.04 210 / 0.45), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 0%, oklch(90% 0.03 70 / 0.5), transparent),
+        linear-gradient(180deg, var(--color-mauve-50), var(--color-mauve-100) 40%, var(--color-mauve-100));
+
+      @variant dark {
+        background-image:
+          radial-gradient(ellipse 70% 45% at 15% -5%, oklch(28% 0.05 210 / 0.5), transparent),
+          radial-gradient(ellipse 50% 35% at 90% 5%, oklch(25% 0.03 50 / 0.4), transparent),
+          linear-gradient(180deg, var(--color-mauve-950), var(--color-mauve-900));
+      }
+    }
   }
 
   body {

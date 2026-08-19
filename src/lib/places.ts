@@ -1,4 +1,4 @@
-import { getMeetingAreaLabel, type QuizAnswers } from '@betterdate/shared'
+import { getMeetingAreaLabel, getProductForAnswers, type PlanQuizAnswers } from '@betterdate/shared'
 
 export type PlaceCandidate = {
   id: string
@@ -48,7 +48,7 @@ function getApiKey(): string {
   return key
 }
 
-function budgetToPriceLevels(budget: QuizAnswers['budget']): string[] | undefined {
+function budgetToPriceLevels(budget: PlanQuizAnswers['budget']): string[] | undefined {
   switch (budget) {
     case '$':
       return ['PRICE_LEVEL_FREE', 'PRICE_LEVEL_INEXPENSIVE', 'PRICE_LEVEL_MODERATE']
@@ -76,48 +76,8 @@ function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n))
 }
 
-function buildSearchQueries(answers: QuizAnswers, areaLabel: string): string[] {
-  const queries: string[] = []
-  const inArea = areaLabel
-
-  for (const vibe of answers.vibes) {
-    switch (vibe) {
-      case 'foodie':
-        queries.push(`best restaurants ${inArea}`)
-        break
-      case 'cozy':
-        queries.push(`cozy cafe or wine bar ${inArea}`)
-        break
-      case 'outdoorsy':
-        queries.push(`parks or scenic walking spots ${inArea}`)
-        break
-      case 'culture':
-        queries.push(`museums galleries or cultural attractions ${inArea}`)
-        break
-      case 'playful':
-        queries.push(`fun date activities or entertainment ${inArea}`)
-        break
-    }
-  }
-
-  if (answers.time === 'evening' || answers.time === 'flexible') {
-    queries.push(`cocktail bars or dessert spots ${inArea}`)
-  }
-  if (answers.time === 'morning' || answers.time === 'afternoon') {
-    queries.push(`brunch cafes or daytime date spots ${inArea}`)
-  }
-  if (answers.energy === 'adventurous') {
-    queries.push(`unique experiences or activities ${inArea}`)
-  }
-  if (answers.energy === 'low_key') {
-    queries.push(`quiet intimate restaurants ${inArea}`)
-  }
-
-  if (!queries.some((q) => q.includes('restaurant') || q.includes('cafe'))) {
-    queries.push(`restaurants ${inArea}`)
-  }
-
-  return [...new Set(queries)].slice(0, 4)
+function buildSearchQueries(answers: PlanQuizAnswers, areaLabel: string): string[] {
+  return getProductForAnswers(answers).buildSearchQueries(answers, areaLabel)
 }
 
 async function geocodeLocation(location: string): Promise<GeocodeResult | null> {
@@ -152,7 +112,7 @@ async function geocodeLocation(location: string): Promise<GeocodeResult | null> 
   }
 }
 
-async function resolveSearchCenter(answers: QuizAnswers): Promise<SearchCenter | null> {
+async function resolveSearchCenter(answers: PlanQuizAnswers): Promise<SearchCenter | null> {
   const label = getMeetingAreaLabel(answers)
 
   switch (answers.meetingPreference) {
@@ -292,7 +252,7 @@ export function normalizePlaceId(placeId: string): string {
   return placeId.trim().replace(/^places\//, '')
 }
 
-export async function findPlaceCandidates(answers: QuizAnswers): Promise<PlaceCandidate[]> {
+export async function findPlaceCandidates(answers: PlanQuizAnswers): Promise<PlaceCandidate[]> {
   const center = await resolveSearchCenter(answers)
   if (!center) {
     throw new Error(

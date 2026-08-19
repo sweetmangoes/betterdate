@@ -1,8 +1,12 @@
 import type { Metadata } from 'next'
 
+import { getProduct } from '@/lib/product'
+
+const product = getProduct()
+
 export const metadata: Metadata = {
-  title: 'Your date plan',
-  description: 'Your personalized Better Date itinerary.',
+  title: product.planPageTitle,
+  description: product.planPageDescription,
   robots: {
     index: false,
     follow: false,

@@ -7,7 +7,9 @@ import { ButtonLink, SoftButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Heading } from '@/components/elements/heading'
 import { Text } from '@/components/elements/text'
-import { datePlanSchema, PLAN_STORAGE_KEY, type DatePlan } from '@betterdate/shared'
+import { datePlanSchema, getProduct, type DatePlan } from '@betterdate/shared'
+
+const product = getProduct()
 
 const categoryLabels: Record<DatePlan['stops'][number]['category'], string> = {
   food: 'Food',
@@ -23,7 +25,7 @@ export default function PlanPage() {
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(PLAN_STORAGE_KEY)
+      const raw = sessionStorage.getItem(product.planStorageKey)
       if (!raw) {
         setLoaded(true)
         return
@@ -53,7 +55,7 @@ export default function PlanPage() {
       <section className="py-20">
         <Container className="flex max-w-xl flex-col gap-6 lg:max-w-xl">
           <Heading className="text-4xl/11 sm:text-5xl/12">No plan yet</Heading>
-          <Text>Take the preference quiz and we’ll build a local date plan for you.</Text>
+          <Text>{product.emptyPlanMessage}</Text>
           <div>
             <ButtonLink href="/quiz" size="lg">
               Start the quiz
@@ -69,7 +71,7 @@ export default function PlanPage() {
   return (
     <section className="py-12 sm:py-16">
       <Container className="max-w-2xl lg:max-w-2xl">
-        <p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">Your date plan</p>
+        <p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">{product.planEyebrow}</p>
         <Heading className="mt-2 text-4xl/11 sm:text-5xl/12">{plan.title}</Heading>
         <Text className="mt-4">{plan.summary}</Text>
 
@@ -128,7 +130,7 @@ export default function PlanPage() {
         <div className="mt-14 space-y-8 border-t border-mauve-950/10 pt-10 dark:border-white/10">
           <div>
             <h3 className="font-display text-xl tracking-tight text-mauve-950 dark:text-white">
-              Conversation starters
+              {product.conversationStartersLabel}
             </h3>
             <ul className="mt-4 list-disc space-y-2 pl-5 text-sm/7 text-mauve-700 dark:text-mauve-400">
               {plan.conversationStarters.map((starter) => (
@@ -153,7 +155,7 @@ export default function PlanPage() {
           <Link
             href="/quiz"
             className="text-sm/7 text-mauve-600 underline-offset-4 hover:underline dark:text-mauve-400"
-            onClick={() => sessionStorage.removeItem(PLAN_STORAGE_KEY)}
+            onClick={() => sessionStorage.removeItem(product.planStorageKey)}
           >
             Retake quiz
           </Link>

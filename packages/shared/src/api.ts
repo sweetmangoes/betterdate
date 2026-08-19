@@ -1,12 +1,13 @@
 import { z } from 'zod'
 
 import { datePlanSchema } from './plan'
-import { quizAnswersSchema } from './quiz'
+import { getProduct } from './product'
+import { dateQuizAnswersSchema, friendsQuizAnswersSchema } from './quiz'
 
 /** Successful `/api/plan` JSON body — shared by web + mobile clients. */
 export const planApiSuccessSchema = z.object({
   plan: datePlanSchema,
-  answers: quizAnswersSchema.optional(),
+  answers: z.union([dateQuizAnswersSchema, friendsQuizAnswersSchema]).optional(),
   grounded: z.boolean().optional(),
 })
 
@@ -23,14 +24,16 @@ export type PlanApiError = z.infer<typeof planApiErrorSchema>
  * Throws with the API error message when the request failed or the body is invalid.
  */
 export function parsePlanApiResponse(statusOk: boolean, body: unknown) {
+  const product = getProduct()
+
   if (!statusOk) {
     const error = planApiErrorSchema.safeParse(body)
-    throw new Error(error.success ? error.data.error : 'Could not generate a date plan.')
+    throw new Error(error.success ? error.data.error : product.errorCouldNotGenerate)
   }
 
   const success = planApiSuccessSchema.safeParse(body)
   if (!success.success) {
-    throw new Error('Received an invalid date plan from the server.')
+    throw new Error(product.errorInvalidPlan)
   }
 
   return success.data

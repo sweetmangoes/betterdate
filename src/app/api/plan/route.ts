@@ -1,10 +1,10 @@
 import {
   buildPlanPrompt,
   datePlanSchema,
+  getGroundedPlanSystemPrompt,
+  getPlanSystemPrompt,
+  getProduct,
   groundedPlanDraftSchema,
-  GROUNDED_PLAN_SYSTEM_PROMPT,
-  PLAN_SYSTEM_PROMPT,
-  quizAnswersSchema,
 } from '@betterdate/shared'
 import { openai } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
@@ -17,11 +17,10 @@ export const runtime = 'nodejs'
 export const maxDuration = 60
 
 export async function POST(request: Request) {
+  const product = getProduct()
+
   if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json(
-      { error: 'Missing OPENAI_API_KEY. Add it to .env.local to generate date plans.' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: product.errorMissingApiKey }, { status: 500 })
   }
 
   let body: unknown
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 })
   }
 
-  const parsed = quizAnswersSchema.safeParse(body)
+  const parsed = product.parseQuizAnswers(body)
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Invalid quiz answers.', details: parsed.error.flatten() },
@@ -58,9 +57,9 @@ export async function POST(request: Request) {
       const { object: draft } = await generateObject({
         model: openai('gpt-4o-mini'),
         schema: groundedPlanDraftSchema,
-        schemaName: 'GroundedDatePlan',
-        schemaDescription: 'A date itinerary using only provided Google Places IDs',
-        system: GROUNDED_PLAN_SYSTEM_PROMPT,
+        schemaName: product.groundedSchemaName,
+        schemaDescription: product.groundedSchemaDescription,
+        system: getGroundedPlanSystemPrompt(),
         prompt: buildPlanPrompt(parsed.data, candidates),
         temperature: 0.7,
       })
@@ -84,16 +83,16 @@ export async function POST(request: Request) {
     const { object } = await generateObject({
       model: openai('gpt-4o-mini'),
       schema: datePlanSchema,
-      schemaName: 'DatePlan',
-      schemaDescription: 'A multi-stop local date itinerary',
-      system: PLAN_SYSTEM_PROMPT,
+      schemaName: product.schemaName,
+      schemaDescription: product.schemaDescription,
+      system: getPlanSystemPrompt(),
       prompt: buildPlanPrompt(parsed.data),
       temperature: 0.8,
     })
 
     return NextResponse.json({ plan: object, answers: parsed.data, grounded: false })
   } catch (error) {
-    console.error('Failed to generate date plan', error)
+    console.error('Failed to generate plan', error)
 
     const message = error instanceof Error ? error.message : ''
     if (message.includes('Incorrect API key') || message.includes('invalid_api_key')) {
@@ -118,9 +117,6 @@ export async function POST(request: Request) {
       )
     }
 
-    return NextResponse.json(
-      { error: 'Could not generate a date plan. Please try again in a moment.' },
-      { status: 502 },
-    )
+    return NextResponse.json({ error: product.errorCouldNotGenerate }, { status: 502 })
   }
 }

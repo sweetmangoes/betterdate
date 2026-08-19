@@ -1,3 +1,5 @@
+import { getProduct } from '@betterdate/shared'
+
 /** Canonical site origin for metadata, sitemap, and robots. */
 export function getSiteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim()
@@ -18,7 +20,8 @@ export function getSiteUrl(): string {
   return 'http://localhost:3000'
 }
 
-export const siteName = 'Better Date'
+const product = getProduct()
 
-export const defaultDescription =
-  'Eliminate bad dates. Plan thoughtful, intentional nights from your preferences — toward a world without bad dates.'
+export const siteName = product.name
+
+export const defaultDescription = product.description

@@ -1,6 +1,10 @@
 import { z } from 'zod'
 
-import { getMeetingAreaLabel, type QuizAnswers } from './quiz'
+import type { PlanCandidate } from './candidates'
+import { getProduct, getProductForAnswers } from './product'
+import type { PlanQuizAnswers } from './quiz'
+
+export type { PlanCandidate } from './candidates'
 
 export const datePlanStopSchema = z.object({
   order: z.number().int().positive(),
@@ -56,105 +60,23 @@ export const groundedPlanDraftSchema = z.object({
 
 export type GroundedPlanDraft = z.infer<typeof groundedPlanDraftSchema>
 
-export type PlanCandidate = {
-  id: string
-  name: string
-  address: string
-  neighborhood: string
-  rating?: number
-  priceLevel?: string
-  mapsUrl: string
-  primaryType?: string
+export function buildPlanPrompt(answers: PlanQuizAnswers, candidates?: PlanCandidate[]): string {
+  return getProductForAnswers(answers).buildPlanPrompt(answers, candidates)
 }
 
-export function buildPlanPrompt(answers: QuizAnswers, candidates?: PlanCandidate[]): string {
-  const audienceLabel = answers.audience === 'first_date' ? 'a first date' : 'an established couple'
-  const vibeList = answers.vibes.join(', ')
-  const constraints = answers.constraints?.trim() || 'None noted'
-  const areaLabel = getMeetingAreaLabel(answers)
-  const meetingNote = (() => {
-    switch (answers.meetingPreference) {
-      case 'midpoint':
-        return 'Prefer venues that work as a fair middle ground for both people (not biased to only one side).'
-      case 'near_me':
-        return 'Prefer venues convenient to the planner’s location.'
-      case 'near_them':
-        return 'Prefer venues convenient to the other person’s location.'
-      case 'neighborhood':
-        return 'Keep the plan walkable within the chosen neighborhood or area.'
-    }
-  })()
-
-  if (candidates && candidates.length > 0) {
-    const list = candidates
-      .map((place, index) => {
-        const rating = place.rating != null ? `rating ${place.rating}` : 'no rating'
-        const price = place.priceLevel ? `, ${place.priceLevel}` : ''
-        const type = place.primaryType ?? 'place'
-        return `${index + 1}. id=${place.id} | ${place.name} | ${place.address} | ${type} | ${rating}${price}`
-      })
-      .join('\n')
-
-    return `You are Better Date, an expert local date planner.
-
-Plan ${audienceLabel} ${areaLabel}.
-
-Meeting preference: ${answers.meetingPreference}
-${meetingNote}
-
-Preferences:
-- Occasion: ${answers.occasion}
-- Budget: ${answers.budget}
-- Time of day: ${answers.time}
-- Energy: ${answers.energy}
-- Vibes: ${vibeList}
-- Constraints: ${constraints}
-
-You MUST build the itinerary using ONLY venues from this candidate list. Copy each stop's placeId exactly.
-Do not invent venues, names, or placeIds.
-
-CANDIDATES:
-${list}
-
-Rules:
-- Choose 3–4 stops with distinct placeIds from the list above.
-- Prefer a walkable sequence in a sensible order for the chosen time of day.
-- Match budget and energy. For first dates, keep it low-pressure. For couples, make it intentional.
-- Do not invent confirmation of reservations, hours, or live availability.
-- Include conversation starters (especially strong ones for first dates).
-- Include one backup idea that names a weather-friendly pivot using a venue name from the list (never placeIds — those are internal only).
-- Set disclaimer to remind the user to verify hours/reservations; venues come from Google Places and should be double-checked.
-- Keep copy warm, specific, and concise. User-facing fields (title, summary, tips, backupIdea, conversation starters, disclaimer) must never include placeIds.`
-  }
-
-  return `You are Better Date, an expert local date planner.
-
-Plan ${audienceLabel} ${areaLabel}.
-
-Meeting preference: ${answers.meetingPreference}
-${meetingNote}
-
-Preferences:
-- Occasion: ${answers.occasion}
-- Budget: ${answers.budget}
-- Time of day: ${answers.time}
-- Energy: ${answers.energy}
-- Vibes: ${vibeList}
-- Constraints: ${constraints}
-
-Rules:
-- Suggest 3–4 real-feeling named places (restaurants, cafes, parks, museums, bars, walks) that fit the meeting area.
-- Prefer a walkable sequence in a sensible order for the chosen time of day.
-- Match budget and energy. For first dates, keep it low-pressure with easy conversation. For couples, make it intentional and thoughtful.
-- Do not invent confirmation of reservations, hours, or live availability.
-- Include conversation starters (especially strong ones for first dates).
-- Include one backup idea if weather or crowds get in the way.
-- Set disclaimer to remind the user to verify hours, reservations, and that venue suggestions are AI-generated.
-- Keep copy warm, specific, and concise — no generic filler.`
+export function getPlanSystemPrompt() {
+  return getProduct().planSystemPrompt
 }
 
+export function getGroundedPlanSystemPrompt() {
+  return getProduct().groundedPlanSystemPrompt
+}
+
+/** @deprecated Use getPlanSystemPrompt() — kept for Date default. */
 export const PLAN_SYSTEM_PROMPT =
   'You plan thoughtful local dates. Return only structured data that matches the schema. When candidates are provided, only use those placeIds. Never claim you have booked anything.'
 
+/** @deprecated Use getGroundedPlanSystemPrompt() — kept for Date default. */
 export const GROUNDED_PLAN_SYSTEM_PROMPT =
   'You plan thoughtful local dates using only the provided Google Places candidates. Every stop must use a real placeId from the list. Never invent venues. Never put placeIds in user-facing copy — use venue names only.'
+

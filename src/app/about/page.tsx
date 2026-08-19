@@ -4,18 +4,20 @@ import { ButtonLink } from '@/components/elements/button'
 import { Section } from '@/components/elements/section'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
+import { getProduct } from '@/lib/product'
+
+const product = getProduct()
+const about = product.about
 
 export const metadata: Metadata = {
   title: 'About',
-  description:
-    'Better Date’s mission is to eliminate bad dates by helping plan thoughtful, intentional dates from your preferences. Our vision is a world without bad dates.',
+  description: product.aboutPageDescription,
   alternates: {
     canonical: '/about',
   },
   openGraph: {
-    title: 'About — Better Date',
-    description:
-      'Better Date’s mission is to eliminate bad dates by helping plan thoughtful, intentional dates from your preferences.',
+    title: `About — ${product.name}`,
+    description: product.aboutPageDescription,
     url: '/about',
   },
 }
@@ -25,64 +27,41 @@ export default function Page() {
     <>
       <HeroSimpleCentered
         id="hero"
-        eyebrow={
-          <p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">About Better Date</p>
-        }
-        headline="A world without bad dates."
-        subheadline={
-          <p>
-            That’s our vision. We’re building Better Date so first dates and couples spend less time guessing — and more
-            time actually connecting.
-          </p>
-        }
+        eyebrow={<p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">{about.eyebrow}</p>}
+        headline={about.headline}
+        subheadline={<p>{about.subheadline}</p>}
         className="pt-12 pb-8 sm:pt-16"
       />
 
       <Section
         id="mission"
-        eyebrow="Mission"
-        headline="Eliminate bad dates"
-        subheadline={
-          <p>
-            We help people plan thoughtful and intentional dates based on their preferences — who they’re with, where
-            they are, what they want the night to feel like, and what to avoid. Preferences in. A clear local plan out.
-          </p>
-        }
+        eyebrow={about.missionEyebrow}
+        headline={about.missionHeadline}
+        subheadline={<p>{about.missionSubheadline}</p>}
       >
         <div className="max-w-2xl space-y-4 text-sm/7 text-mauve-700 dark:text-mauve-400">
-          <p>
-            Bad dates aren’t usually about the people. They’re about mismatched energy, nowhere good to go, or defaulting
-            to whatever’s easiest. Better Date exists to take that friction away.
-          </p>
+          <p>{about.missionBody}</p>
         </div>
       </Section>
 
       <Section
         id="vision"
-        eyebrow="Vision"
-        headline="A world without bad dates"
-        subheadline={
-          <p>
-            Not a promise that every night will be perfect — a commitment to make intentional planning the default, so
-            fewer evenings go to waste.
-          </p>
-        }
+        eyebrow={about.visionEyebrow}
+        headline={about.visionHeadline}
+        subheadline={<p>{about.visionSubheadline}</p>}
       >
         <div className="max-w-2xl space-y-4 text-sm/7 text-mauve-700 dark:text-mauve-400">
-          <p>
-            Whether it’s date one or date one hundred, the bar is the same: a plan that fits you, in your city, that you
-            can actually follow through on.
-          </p>
+          <p>{about.visionBody}</p>
         </div>
       </Section>
 
       <CallToActionSimpleCentered
         id="cta"
-        headline="Ready to plan better?"
-        subheadline={<p>Take the quiz and get a thoughtful local date plan in minutes.</p>}
+        headline={about.ctaHeadline}
+        subheadline={<p>{about.ctaSubheadline}</p>}
         cta={
           <ButtonLink href="/quiz" size="lg">
-            Start the quiz
+            {about.ctaButton}
           </ButtonLink>
         }
       />
