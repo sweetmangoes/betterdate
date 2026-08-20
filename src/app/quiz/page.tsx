@@ -8,6 +8,7 @@ import { Container } from '@/components/elements/container'
 import { Heading } from '@/components/elements/heading'
 import { LocationAutocomplete } from '@/components/elements/location-autocomplete'
 import { Text } from '@/components/elements/text'
+import { CheckmarkIcon } from '@/components/icons/checkmark-icon'
 import { useBrowserLocation } from '@/hooks/use-browser-location'
 import {
   getProduct,
@@ -21,11 +22,15 @@ const product = getProduct()
 
 function OptionButton({
   selected,
+  featured,
+  badge,
   onClick,
   title,
   description,
 }: {
   selected: boolean
+  featured?: boolean
+  badge?: string
   onClick: () => void
   title: string
   description?: string
@@ -33,16 +38,32 @@ function OptionButton({
   return (
     <button
       type="button"
+      aria-pressed={selected}
       onClick={onClick}
       className={clsx(
-        'w-full rounded-2xl border px-4 py-3 text-left transition',
+        'w-full rounded-2xl border-2 text-left transition',
+        featured ? 'px-5 py-4' : 'px-4 py-3',
         selected
-          ? 'border-rose-600 bg-rose-50/80 text-mauve-950 dark:border-rose-400 dark:bg-rose-950/40 dark:text-white'
+          ? 'border-rose-600 bg-rose-50 text-mauve-950 dark:border-rose-400 dark:bg-rose-950/50 dark:text-white'
           : 'border-mauve-950/10 bg-white/60 text-mauve-950 hover:border-mauve-950/25 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-white/25',
       )}
     >
-      <span className="block text-sm/7 font-semibold">{title}</span>
-      {description && <span className="mt-0.5 block text-sm/6 text-mauve-600 dark:text-mauve-400">{description}</span>}
+      <span className="flex items-start justify-between gap-3">
+        <span className="min-w-0 flex-1">
+          {badge && (
+            <span className="mb-1.5 inline-flex rounded-full bg-rose-600/10 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-400/15 dark:text-rose-300">
+              {badge}
+            </span>
+          )}
+          <span className="block text-sm/7 font-semibold">{title}</span>
+          {description && (
+            <span className="mt-0.5 block text-sm/6 text-mauve-600 dark:text-mauve-400">{description}</span>
+          )}
+        </span>
+        {selected && (
+          <CheckmarkIcon className="mt-1 size-4 shrink-0 text-rose-700 dark:text-rose-300" aria-hidden />
+        )}
+      </span>
     </button>
   )
 }
@@ -67,6 +88,11 @@ export default function QuizPage() {
   const progress = ((Math.min(stepIndex, steps.length - 1) + 1) / steps.length) * 100
   const { coords, status: locationStatus, requestPermission } = useBrowserLocation(step.id === 'location')
   const meetingOptions = product.getMeetingPreferenceOptions(answers)
+  const locationCopy = product.getLocationCopy?.(answers) ?? {
+    yourLabel: product.locationYourLabel,
+    theirLabel: product.locationTheirLabel,
+    neighborhoodLabel: product.locationNeighborhoodLabel,
+  }
 
   function update(patch: Record<string, unknown>) {
     setAnswers((prev) => patchAnswers(prev, patch))
@@ -166,9 +192,7 @@ export default function QuizPage() {
                     return
                   }
                   const meetingPreference =
-                    answers.meetingPreference === 'midpoint' || answers.meetingPreference === 'near_them'
-                      ? 'neighborhood'
-                      : answers.meetingPreference
+                    answers.meetingPreference === 'near_them' ? 'neighborhood' : answers.meetingPreference
                   update({ hangoutType: 'group', meetingPreference })
                 }}
                 title={option.label}
@@ -191,6 +215,8 @@ export default function QuizPage() {
               <OptionButton
                 key={option.value}
                 selected={answers.meetingPreference === option.value}
+                featured={option.featured}
+                badge={option.badge}
                 onClick={() => update({ meetingPreference: option.value })}
                 title={option.label}
                 description={option.description}
@@ -202,7 +228,7 @@ export default function QuizPage() {
               {(answers.meetingPreference === 'midpoint' || answers.meetingPreference === 'near_me') && (
                 <label className="flex flex-col gap-1.5">
                   <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
-                    {product.locationYourLabel}
+                    {locationCopy.yourLabel}
                   </span>
                   <LocationAutocomplete
                     value={answers.myLocation}
@@ -210,7 +236,7 @@ export default function QuizPage() {
                     placeholder="e.g. Astoria, Queens"
                     className={inputClassName}
                     autoFocus
-                    aria-label={product.locationYourLabel}
+                    aria-label={locationCopy.yourLabel}
                     bias={coords}
                   />
                 </label>
@@ -218,7 +244,7 @@ export default function QuizPage() {
               {(answers.meetingPreference === 'midpoint' || answers.meetingPreference === 'near_them') && (
                 <label className="flex flex-col gap-1.5">
                   <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
-                    {product.locationTheirLabel}
+                    {locationCopy.theirLabel}
                   </span>
                   <LocationAutocomplete
                     value={answers.theirLocation}
@@ -226,7 +252,7 @@ export default function QuizPage() {
                     placeholder="e.g. Park Slope, Brooklyn"
                     className={inputClassName}
                     autoFocus={answers.meetingPreference === 'near_them'}
-                    aria-label={product.locationTheirLabel}
+                    aria-label={locationCopy.theirLabel}
                     bias={coords}
                   />
                 </label>
@@ -234,7 +260,7 @@ export default function QuizPage() {
               {answers.meetingPreference === 'neighborhood' && (
                 <label className="flex flex-col gap-1.5">
                   <span className="text-sm/6 font-medium text-mauve-700 dark:text-mauve-300">
-                    {product.locationNeighborhoodLabel}
+                    {locationCopy.neighborhoodLabel}
                   </span>
                   <LocationAutocomplete
                     value={answers.location}
@@ -242,10 +268,13 @@ export default function QuizPage() {
                     placeholder="e.g. Williamsburg, Brooklyn"
                     className={inputClassName}
                     autoFocus
-                    aria-label={product.locationNeighborhoodLabel}
+                    aria-label={locationCopy.neighborhoodLabel}
                     bias={coords}
                   />
                 </label>
+              )}
+              {locationCopy.hint && (
+                <p className="text-sm/6 text-mauve-600 dark:text-mauve-400">{locationCopy.hint}</p>
               )}
               {locationStatus === 'denied' && (
                 <p className="text-sm/6 text-mauve-600 dark:text-mauve-400">
@@ -295,6 +324,17 @@ export default function QuizPage() {
                 selected={answers.time === option.value}
                 onClick={() => update({ time: option.value })}
                 title={option.label}
+              />
+            ))}
+
+          {step.id === 'hangLength' &&
+            (product.getDurationOptions?.(answers) ?? []).map((option) => (
+              <OptionButton
+                key={option.value}
+                selected={answers.product === 'friends' && answers.hangLength === option.value}
+                onClick={() => update({ hangLength: option.value })}
+                title={option.label}
+                description={option.description}
               />
             ))}
 

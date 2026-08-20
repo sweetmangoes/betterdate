@@ -9,12 +9,20 @@ export type QuizOption<T extends string | number = string> = {
   value: T
   label: string
   description?: string
+  featured?: boolean
+  badge?: string
 }
 
 export type LandingCopy = {
   eyebrow: string
   headline: string
   subheadline: string
+  namedFeature?: {
+    eyebrow: string
+    headline: string
+    subheadline: string
+    points: Array<{ headline: string; body: string }>
+  }
   howEyebrow: string
   howHeadline: string
   howSubheadline: string
@@ -67,6 +75,12 @@ export type ProductConfig = {
   locationYourLabel: string
   locationTheirLabel: string
   locationNeighborhoodLabel: string
+  getLocationCopy?: (answers: PlanQuizAnswers) => {
+    yourLabel: string
+    theirLabel: string
+    neighborhoodLabel: string
+    hint?: string
+  }
   errorMissingApiKey: string
   errorCouldNotGenerate: string
   errorInvalidPlan: string
@@ -89,6 +103,7 @@ export type ProductConfig = {
   vibeOptions: readonly QuizOption[]
   budgetOptions: readonly QuizOption[]
   timeOptions: readonly QuizOption[]
+  getDurationOptions?: (answers: PlanQuizAnswers) => readonly QuizOption[]
   energyOptions: readonly QuizOption[]
   buildPlanPrompt: (answers: PlanQuizAnswers, candidates?: PlanCandidate[]) => string
   buildSearchQueries: (answers: PlanQuizAnswers, areaLabel: string) => string[]

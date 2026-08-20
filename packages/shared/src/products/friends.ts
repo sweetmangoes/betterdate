@@ -11,7 +11,9 @@ import {
   FRIENDS_QUIZ_STORAGE_KEY,
   friendsQuizAnswersSchema,
   friendsVibeOptions,
+  getFriendsHangLengthOptions,
   getFriendsQuizSteps,
+  getHangLengthPlanRule,
   getMeetingAreaLabel,
   getMeetingNote,
   groupSizeOptions,
@@ -69,7 +71,9 @@ function buildFriendsSearchQueries(answers: FriendsQuizAnswers, areaLabel: strin
   }
 
   if (answers.time === 'evening' || answers.time === 'flexible') {
-    queries.push(isGroup ? `group-friendly bars or dessert spots ${inArea}` : `cocktail bars or dessert spots ${inArea}`)
+    if (answers.hangLength !== 'few_hours') {
+      queries.push(isGroup ? `group-friendly bars or dessert spots ${inArea}` : `cocktail bars or dessert spots ${inArea}`)
+    }
   }
   if (answers.time === 'morning' || answers.time === 'afternoon') {
     queries.push(`brunch cafes or daytime hangout spots ${inArea}`)
@@ -96,6 +100,7 @@ function buildFriendsPlanPrompt(answers: FriendsQuizAnswers, candidates?: PlanCa
   const constraints = answers.constraints?.trim() || 'None noted'
   const areaLabel = getMeetingAreaLabel(answers)
   const meetingNote = getMeetingNote(answers)
+  const hang = getHangLengthPlanRule(answers.hangLength, answers.time)
   const who =
     answers.hangoutType === 'group'
       ? `a group of ${answers.groupSize ?? 4} friends`
@@ -105,6 +110,7 @@ function buildFriendsPlanPrompt(answers: FriendsQuizAnswers, candidates?: PlanCa
     answers.hangoutType === 'group'
       ? `- Prefer venues that work for ${answers.groupSize ?? 4} people (not tiny two-tops). Mention a reservation tip when a food stop would be tight for a group.`
       : '- Keep it easy for two friends — not a romantic date, not a huge party.'
+  const lengthRule = `- Choose ${hang.stopCount} stops${candidates && candidates.length > 0 ? ' with distinct placeIds from the list above' : ''}. Set duration to about ${hang.durationHint}. They want ${hang.label}. ${hang.pacing}`
 
   if (candidates && candidates.length > 0) {
     return `You are Better Hang, an expert local hangout planner.
@@ -118,6 +124,7 @@ Preferences:
 - Occasion: ${answers.occasion}
 - Budget: ${answers.budget}
 - Time of day: ${answers.time}
+- How long: ${hang.label} (${hang.durationHint})
 - Energy: ${answers.energy}
 - Vibes: ${vibeList}
 - Constraints: ${constraints}
@@ -129,7 +136,7 @@ CANDIDATES:
 ${formatCandidateList(candidates)}
 
 Rules:
-- Choose 3–4 stops with distinct placeIds from the list above.
+${lengthRule}
 - Prefer a walkable sequence in a sensible order for the chosen time of day.
 - Match budget and energy. This is a friends hangout — catch-up energy, not first-date chemistry.
 ${groupRule}
@@ -151,12 +158,14 @@ Preferences:
 - Occasion: ${answers.occasion}
 - Budget: ${answers.budget}
 - Time of day: ${answers.time}
+- How long: ${hang.label} (${hang.durationHint})
 - Energy: ${answers.energy}
 - Vibes: ${vibeList}
 - Constraints: ${constraints}
 
 Rules:
-- Suggest 3–4 real-feeling named places (restaurants, cafes, parks, museums, bars, walks) that fit the meeting area.
+${lengthRule}
+- Suggest real-feeling named places (restaurants, cafes, parks, museums, bars, walks) that fit the meeting area.
 - Prefer a walkable sequence in a sensible order for the chosen time of day.
 - Match budget and energy. This is a friends hangout — catch-up energy, not first-date chemistry.
 ${groupRule}
@@ -192,6 +201,36 @@ export const friendsProduct: ProductConfig = {
   locationYourLabel: 'Your location',
   locationTheirLabel: 'Their location',
   locationNeighborhoodLabel: 'Neighborhood or city',
+  getLocationCopy: (answers) => {
+    if (isFriendsQuizAnswers(answers) && answers.hangoutType === 'group' && answers.meetingPreference === 'midpoint') {
+      return {
+        yourLabel: 'One starting point',
+        theirLabel: 'The other starting point',
+        neighborhoodLabel: 'Shared neighborhood',
+        hint: 'You don’t need every address — two ends of the group is enough. We’ll meet in the middle.',
+      }
+    }
+    if (isFriendsQuizAnswers(answers) && answers.meetingPreference === 'midpoint') {
+      return {
+        yourLabel: 'Your location',
+        theirLabel: 'Their location',
+        neighborhoodLabel: 'Neighborhood or city',
+        hint: 'We’ll pick spots roughly equal distance from both of you.',
+      }
+    }
+    if (isFriendsQuizAnswers(answers) && answers.hangoutType === 'group') {
+      return {
+        yourLabel: 'Host location',
+        theirLabel: 'Their location',
+        neighborhoodLabel: 'Shared neighborhood',
+      }
+    }
+    return {
+      yourLabel: 'Your location',
+      theirLabel: 'Their location',
+      neighborhoodLabel: 'Neighborhood or city',
+    }
+  },
   errorMissingApiKey: 'Missing OPENAI_API_KEY. Add it to .env.local to generate hangout plans.',
   errorCouldNotGenerate: 'Could not generate a hangout plan. Please try again in a moment.',
   errorInvalidPlan: 'Received an invalid hangout plan from the server.',
@@ -229,6 +268,12 @@ export const friendsProduct: ProductConfig = {
   vibeOptions: friendsVibeOptions,
   budgetOptions,
   timeOptions,
+  getDurationOptions: (answers) => {
+    if (!isFriendsQuizAnswers(answers)) {
+      return getFriendsHangLengthOptions('evening')
+    }
+    return getFriendsHangLengthOptions(answers.time)
+  },
   energyOptions,
   buildPlanPrompt: (answers: PlanQuizAnswers, candidates?: PlanCandidate[]) => {
     if (!isFriendsQuizAnswers(answers)) {
@@ -246,14 +291,30 @@ export const friendsProduct: ProductConfig = {
     eyebrow: 'Better Hang',
     headline: 'Intentional hangouts, planned for where you are.',
     subheadline:
-      'Stop defaulting to “idk, bar?” A short quiz turns your people’s preferences into a local plan — for two friends or a whole group.',
+      'Stop defaulting to “idk, bar?” Meet in the middle, pick a vibe, get a local plan — for two friends or a whole group.',
+    namedFeature: {
+      eyebrow: 'Meet in the middle',
+      headline: 'Equal-distance plans, without the commute debate.',
+      subheadline:
+        'Drop two locations. We pick spots roughly halfway — for two friends, or two sides of a group.',
+      points: [
+        {
+          headline: 'Two friends',
+          body: 'Your place and theirs. Meet in the middle is the default — the Better Hang move.',
+        },
+        {
+          headline: 'The group',
+          body: 'Fair for everyone: two representative starting points, then a meetup that isn’t only convenient for whoever picked the bar.',
+        },
+      ],
+    },
     howEyebrow: 'How it works',
     howHeadline: 'Three steps to a better hang',
     howSubheadline: 'No accounts. No group chat chaos. Just preferences in, a local plan out.',
     steps: [
       {
         headline: '1. Tell us who’s coming',
-        subheadline: 'Two friends or a group, plus city, budget, energy, and anything to avoid.',
+        subheadline: 'Two friends or a group, plus where you’re starting from, budget, energy, and anything to avoid.',
       },
       {
         headline: '2. AI plans the hangout',
@@ -270,11 +331,11 @@ export const friendsProduct: ProductConfig = {
     whoItems: [
       {
         headline: 'Two friends',
-        body: 'Halfway meeting, a proper catch-up, or a night out that isn’t a date and isn’t scrolling maps in the group chat.',
+        body: 'Meet in the middle is the default: spots equal distance from both of you. A catch-up or a night out that isn’t a date — and isn’t scrolling maps in the group chat.',
       },
       {
         headline: 'Groups',
-        body: 'Birthdays, reunions, or just hanging. We pick venues that work for three to eight people — not a two-top squeezed into a six-top night.',
+        body: 'Birthdays, reunions, or just hanging. Fair for everyone uses two starting points so the plan isn’t only convenient for the host — and we pick venues that work for three to eight people.',
       },
     ],
     ctaHeadline: 'Ready when you are',

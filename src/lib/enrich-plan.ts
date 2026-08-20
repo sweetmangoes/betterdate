@@ -66,7 +66,7 @@ export function enrichPlanFromCandidates(
     .filter((stop): stop is NonNullable<typeof stop> => stop != null)
     .map((stop, index) => ({ ...stop, order: index + 1 }))
 
-  if (stops.length < 2) {
+  if (stops.length < 1) {
     throw new Error('Model returned unknown placeId: not enough valid stops after enrichment')
   }
 

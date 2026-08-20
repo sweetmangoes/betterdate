@@ -45,8 +45,10 @@ export const meetingPreferenceOptions = [
 export const friendsPairMeetingOptions = [
   {
     value: 'midpoint',
-    label: 'Halfway between us',
+    label: 'Meet in the middle',
     description: 'Find spots roughly equal distance from both of you.',
+    featured: true,
+    badge: 'Better Hang move',
   },
   {
     value: 'near_me',
@@ -67,14 +69,21 @@ export const friendsPairMeetingOptions = [
 
 export const friendsGroupMeetingOptions = [
   {
-    value: 'near_me',
-    label: 'Near me',
-    description: 'Gather around the host’s area.',
+    value: 'midpoint',
+    label: 'Fair for everyone',
+    description: 'Two starting points — we meet in the middle so nobody’s stuck with the long trip.',
+    featured: true,
+    badge: 'Better Hang move',
   },
   {
     value: 'neighborhood',
-    label: 'Specific neighborhood',
-    description: 'Pick a spot everyone can get to.',
+    label: 'Shared neighborhood',
+    description: 'Already have a fair area in mind? Plan there.',
+  },
+  {
+    value: 'near_me',
+    label: 'Near the host',
+    description: 'Gather around the host’s area.',
   },
 ] as const
 
@@ -105,6 +114,93 @@ export const timeOptions = [
   { value: 'evening', label: 'Evening' },
   { value: 'flexible', label: 'Flexible' },
 ] as const
+
+export const friendsHangLengthOptions = [
+  {
+    value: 'few_hours',
+    label: 'A few hours',
+    description: '3 hours max — coffee, a walk, or one meal. Then people bounce.',
+  },
+  {
+    value: 'half_night',
+    label: 'Half night',
+    description: 'Dinner plus one more thing. Still home at a decent hour.',
+  },
+  {
+    value: 'whole_night',
+    label: 'Whole night',
+    description: 'Commit the evening — dinner, something to do, then drinks.',
+  },
+] as const
+
+export function getFriendsHangLengthOptions(time: 'morning' | 'afternoon' | 'evening' | 'flexible'): readonly {
+  value: 'few_hours' | 'half_night' | 'whole_night'
+  label: string
+  description: string
+}[] {
+  if (time === 'morning' || time === 'afternoon') {
+    const stretch = time === 'morning' ? 'morning' : 'afternoon'
+    return [
+      {
+        value: 'few_hours',
+        label: 'A few hours',
+        description: '3 hours max — one or two stops, then done.',
+      },
+      {
+        value: 'half_night',
+        label: 'A longer hang',
+        description: `A solid chunk of the ${stretch}, not the whole thing.`,
+      },
+      {
+        value: 'whole_night',
+        label: `The whole ${stretch}`,
+        description: `Make a ${stretch} of it — a full plan, not a quick stop.`,
+      },
+    ]
+  }
+  return friendsHangLengthOptions
+}
+
+export function getHangLengthPlanRule(
+  hangLength: 'few_hours' | 'half_night' | 'whole_night',
+  time: 'morning' | 'afternoon' | 'evening' | 'flexible' = 'evening',
+): {
+  label: string
+  stopCount: string
+  durationHint: string
+  pacing: string
+} {
+  const isDaytime = time === 'morning' || time === 'afternoon'
+
+  switch (hangLength) {
+    case 'few_hours':
+      return {
+        label: 'a few hours (3 hours max)',
+        stopCount: '1–2',
+        durationHint: '2–3 hours',
+        pacing:
+          'Keep it tight. One main stop and an optional short second. People need to leave after. Do not plan a crawl or a late last stop.',
+      }
+    case 'half_night':
+      return {
+        label: isDaytime ? `a longer ${time} hang — not the whole ${time}` : 'half a night',
+        stopCount: '2–3',
+        durationHint: '4–5 hours',
+        pacing: isDaytime
+          ? `A solid stretch of the ${time}, then wrap up. Not an all-day itinerary.`
+          : 'Dinner plus one more thing. Home at a decent hour — not a full night out.',
+      }
+    case 'whole_night':
+      return {
+        label: isDaytime ? `the whole ${time}` : 'the whole night',
+        stopCount: '3–4',
+        durationHint: isDaytime ? '4–6 hours' : '5–7 hours',
+        pacing: isDaytime
+          ? `Make a ${time} of it: a full sequence, not a quick stop.`
+          : 'Commit the evening: dinner, something to do, then drinks or dessert. A later last stop is fine.',
+      }
+  }
+}
 
 export const energyOptions = [
   { value: 'low_key', label: 'Low-key', description: 'Relaxed and unhurried' },
@@ -222,6 +318,7 @@ export const friendsQuizAnswersSchema = z
     occasion: z.enum(['weeknight', 'weekend', 'birthday', 'catch_up', 'just_because']),
     budget: z.enum(['$', '$$', '$$$']),
     time: z.enum(['morning', 'afternoon', 'evening', 'flexible']),
+    hangLength: z.enum(['few_hours', 'half_night', 'whole_night']),
     energy: z.enum(['low_key', 'mixed', 'adventurous']),
     vibes: z
       .array(z.enum(['cozy', 'outdoorsy', 'foodie', 'culture', 'playful', 'games', 'nightlife']))
@@ -238,11 +335,11 @@ export const friendsQuizAnswersSchema = z
           message: 'Choose how many people',
         })
       }
-      if (data.meetingPreference === 'midpoint' || data.meetingPreference === 'near_them') {
+      if (data.meetingPreference === 'near_them') {
         ctx.addIssue({
           code: 'custom',
           path: ['meetingPreference'],
-          message: 'Groups meet near you or in a shared neighborhood',
+          message: 'Groups meet in the middle, near the host, or in a shared neighborhood',
         })
       }
     }
@@ -282,6 +379,7 @@ export type FriendsQuizStepId =
   | 'occasion'
   | 'budget'
   | 'time'
+  | 'hangLength'
   | 'energy'
   | 'vibes'
   | 'constraints'
@@ -360,7 +458,7 @@ export const friendsQuizSteps: QuizStep[] = [
   {
     id: 'meeting',
     title: 'Where should you meet?',
-    subtitle: 'Near the host, a shared neighborhood, or halfway if it’s just two of you.',
+    subtitle: 'Meet in the middle is the Better Hang move — spots equal distance from both of you.',
   },
   {
     id: 'location',
@@ -380,7 +478,12 @@ export const friendsQuizSteps: QuizStep[] = [
   {
     id: 'time',
     title: 'When are you going?',
-    subtitle: 'Brunch, afternoon, or a full night out — we’ll schedule around it.',
+    subtitle: 'Morning, afternoon, or evening — next we’ll ask how long.',
+  },
+  {
+    id: 'hangLength',
+    title: 'How long should you hang?',
+    subtitle: 'A few hours, half the night, or the whole night — we’ll size the plan to match.',
   },
   {
     id: 'energy',
@@ -400,10 +503,41 @@ export const friendsQuizSteps: QuizStep[] = [
 ]
 
 export function getFriendsQuizSteps(answers: FriendsQuizAnswers): QuizStep[] {
-  if (answers.hangoutType !== 'group') {
-    return friendsQuizSteps.filter((step) => step.id !== 'groupSize')
-  }
-  return friendsQuizSteps
+  const steps =
+    answers.hangoutType !== 'group'
+      ? friendsQuizSteps.filter((step) => step.id !== 'groupSize')
+      : friendsQuizSteps
+
+  return steps.map((step) => {
+    if (step.id === 'meeting') {
+      return {
+        ...step,
+        subtitle:
+          answers.hangoutType === 'group'
+            ? 'Fair for everyone finds a middle ground from two starting points — or pick a shared neighborhood or the host’s area.'
+            : 'Meet in the middle is the Better Hang move — spots equal distance from both of you.',
+      }
+    }
+    if (step.id === 'hangLength') {
+      const isDaytime = answers.time === 'morning' || answers.time === 'afternoon'
+      return {
+        ...step,
+        subtitle: isDaytime
+          ? `A few hours or the whole ${answers.time} — we’ll size the plan to match.`
+          : 'A few hours, half the night, or the whole night — we’ll size the plan to match.',
+      }
+    }
+    if (step.id === 'location' && answers.meetingPreference === 'midpoint') {
+      return {
+        ...step,
+        subtitle:
+          answers.hangoutType === 'group'
+            ? 'Two representative starting points is enough — city, neighborhood, or landmark.'
+            : 'Your place and theirs. Be as specific as you can — city, neighborhood, or landmark.',
+      }
+    }
+    return step
+  })
 }
 
 export const emptyQuizAnswers: QuizAnswers = {
@@ -424,13 +558,14 @@ export const emptyQuizAnswers: QuizAnswers = {
 export const emptyFriendsQuizAnswers: FriendsQuizAnswers = {
   product: 'friends',
   hangoutType: 'pair',
-  meetingPreference: 'neighborhood',
+  meetingPreference: 'midpoint',
   myLocation: '',
   theirLocation: '',
   location: '',
   occasion: 'weekend',
   budget: '$$',
   time: 'evening',
+  hangLength: 'half_night',
   energy: 'mixed',
   vibes: [],
   constraints: '',
@@ -441,13 +576,16 @@ export type MeetingLocationAnswers = {
   myLocation: string
   theirLocation: string
   location: string
+  hangoutType?: 'pair' | 'group'
 }
 
 /** Human-readable area label for prompts and UI. */
 export function getMeetingAreaLabel(answers: MeetingLocationAnswers): string {
   switch (answers.meetingPreference) {
     case 'midpoint':
-      return `halfway between ${answers.myLocation.trim()} and ${answers.theirLocation.trim()}`
+      return answers.hangoutType === 'group'
+        ? `a fair middle ground between ${answers.myLocation.trim()} and ${answers.theirLocation.trim()}`
+        : `halfway between ${answers.myLocation.trim()} and ${answers.theirLocation.trim()}`
     case 'near_me':
       return `near ${answers.myLocation.trim()}`
     case 'near_them':
@@ -460,13 +598,17 @@ export function getMeetingAreaLabel(answers: MeetingLocationAnswers): string {
 export function getMeetingNote(answers: MeetingLocationAnswers): string {
   switch (answers.meetingPreference) {
     case 'midpoint':
-      return 'Prefer venues that work as a fair middle ground for both people (not biased to only one side).'
+      return answers.hangoutType === 'group'
+        ? 'The two locations are representative starting points for the group. Prefer venues that are a fair middle ground (not biased to only one side).'
+        : 'Prefer venues that work as a fair middle ground for both people (not biased to only one side).'
     case 'near_me':
       return 'Prefer venues convenient to the planner’s location.'
     case 'near_them':
       return 'Prefer venues convenient to the other person’s location.'
     case 'neighborhood':
-      return 'Keep the plan walkable within the chosen neighborhood or area.'
+      return answers.hangoutType === 'group'
+        ? 'Keep the plan walkable within the shared neighborhood — treat it as the group’s fair meetup area.'
+        : 'Keep the plan walkable within the chosen neighborhood or area.'
   }
 }
 
@@ -497,6 +639,8 @@ export function isQuizStepComplete(stepId: ProductQuizStepId, answers: PlanQuizA
       return Boolean(answers.budget)
     case 'time':
       return Boolean(answers.time)
+    case 'hangLength':
+      return answers.product === 'friends' && Boolean(answers.hangLength)
     case 'energy':
       return Boolean(answers.energy)
     case 'vibes':
