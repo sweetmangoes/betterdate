@@ -26,7 +26,7 @@ export const datePlanSchema = z.object({
   estimatedCost: z.string(),
   duration: z.string(),
   stops: z.array(datePlanStopSchema).min(1).max(5),
-  conversationStarters: z.array(z.string()).min(2).max(5),
+  conversationStarters: z.array(z.string()).max(5).default([]),
   backupIdea: z.string(),
   disclaimer: z.string(),
 })
@@ -53,7 +53,7 @@ export const groundedPlanDraftSchema = z.object({
     )
     .min(1)
     .max(5),
-  conversationStarters: z.array(z.string()).min(2).max(5),
+  conversationStarters: z.array(z.string()).max(5).default([]),
   backupIdea: z.string(),
   disclaimer: z.string(),
 })

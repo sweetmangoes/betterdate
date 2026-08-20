@@ -36,6 +36,12 @@ export default function Page() {
           personal or account details, such as your name, email address, or similar contact information.
         </p>
         <p>
+          If you create an account, we store hang or date preference defaults you choose to save — such as your usual
+          location, budget, energy, vibes, and constraints — so we can prefill the quiz next time. Hang-specific details
+          (who you are meeting, when, and where the other person is) are not stored as defaults unless you save them
+          yourself from the account page. You can update or clear these defaults while signed in.
+        </p>
+        <p>
           We may also automatically collect limited technical or usage information when you use the Services. This may
           include information such as browser type, device or operating system details, IP address, and general usage
           data.

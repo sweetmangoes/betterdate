@@ -140,6 +140,7 @@ export const dateProduct: ProductConfig = {
   quizStorageKey: QUIZ_STORAGE_KEY,
   ctaLabel: 'Plan a date',
   conversationStartersLabel: 'Conversation starters',
+  showConversationStarters: true,
   planEyebrow: 'Your date plan',
   emptyPlanMessage: 'Take the preference quiz and we’ll build a local date plan for you.',
   footerFineprint: '© 2026 Better Date. Venue suggestions are AI-generated — always verify hours and reservations.',

@@ -76,7 +76,7 @@ export function enrichPlanFromCandidates(
     estimatedCost: draft.estimatedCost,
     duration: draft.duration,
     stops,
-    conversationStarters: draft.conversationStarters.map((s) =>
+    conversationStarters: (draft.conversationStarters ?? []).map((s) =>
       scrubPlaceIdsFromCopy(s, candidates),
     ),
     backupIdea: scrubPlaceIdsFromCopy(draft.backupIdea, candidates),

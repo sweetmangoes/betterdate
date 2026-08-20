@@ -35,6 +35,8 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.17",
     "@betterdate/shared": "*",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.3",
     "@tailwindplus/elements": "0.0.0-insiders.98ea4bc",
     "ai": "^7.0.34",
     "clsx": "^2.1.1",

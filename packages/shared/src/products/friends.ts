@@ -141,10 +141,10 @@ ${lengthRule}
 - Match budget and energy. This is a friends hangout — catch-up energy, not first-date chemistry.
 ${groupRule}
 - Do not invent confirmation of reservations, hours, or live availability.
-- Include talking points / icebreakers suited to friends (shared memories, what they’ve been up to — not dating-app small talk).
+- Set conversationStarters to an empty array. Friends already know each other — no icebreakers.
 - Include one backup idea that names a weather-friendly pivot using a venue name from the list (never placeIds — those are internal only).
 - Set disclaimer to remind the user to verify hours/reservations; venues come from Google Places and should be double-checked.
-- Keep copy warm, specific, and concise. User-facing fields (title, summary, tips, backupIdea, conversation starters, disclaimer) must never include placeIds.`
+- Keep copy warm, specific, and concise. User-facing fields (title, summary, tips, backupIdea, disclaimer) must never include placeIds.`
   }
 
   return `You are Better Hang, an expert local hangout planner.
@@ -170,7 +170,7 @@ ${lengthRule}
 - Match budget and energy. This is a friends hangout — catch-up energy, not first-date chemistry.
 ${groupRule}
 - Do not invent confirmation of reservations, hours, or live availability.
-- Include talking points / icebreakers suited to friends.
+- Set conversationStarters to an empty array. Friends already know each other — no icebreakers.
 - Include one backup idea if weather or crowds get in the way.
 - Set disclaimer to remind the user to verify hours, reservations, and that venue suggestions are AI-generated.
 - Keep copy warm, specific, and concise — no generic filler.`
@@ -186,6 +186,7 @@ export const friendsProduct: ProductConfig = {
   quizStorageKey: FRIENDS_QUIZ_STORAGE_KEY,
   ctaLabel: 'Plan a hangout',
   conversationStartersLabel: 'Talking points',
+  showConversationStarters: false,
   planEyebrow: 'Your hangout plan',
   emptyPlanMessage: 'Take the preference quiz and we’ll build a local hangout plan for you.',
   footerFineprint: '© 2026 Better Hang. Venue suggestions are AI-generated — always verify hours and reservations.',
@@ -322,7 +323,7 @@ export const friendsProduct: ProductConfig = {
       },
       {
         headline: '3. Show up ready',
-        subheadline: 'Get timing tips, talking points, and a backup idea — then verify hours and go.',
+        subheadline: 'Get timing tips and a backup idea — then verify hours and go.',
       },
     ],
     whoEyebrow: 'Who it’s for',

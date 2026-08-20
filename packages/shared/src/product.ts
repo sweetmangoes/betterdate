@@ -62,6 +62,7 @@ export type ProductConfig = {
   quizStorageKey: string
   ctaLabel: string
   conversationStartersLabel: string
+  showConversationStarters: boolean
   planEyebrow: string
   emptyPlanMessage: string
   footerFineprint: string

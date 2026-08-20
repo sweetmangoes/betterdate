@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 import { Button, SoftButton } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
@@ -11,9 +11,11 @@ import { Text } from '@/components/elements/text'
 import { CheckmarkIcon } from '@/components/icons/checkmark-icon'
 import { useBrowserLocation } from '@/hooks/use-browser-location'
 import {
+  applyPreferenceProfile,
   getProduct,
   isQuizStepComplete,
   parsePlanApiResponse,
+  parsePreferenceProfile,
   type PlanQuizAnswers,
 } from '@betterdate/shared'
 import { clsx } from 'clsx/lite'
@@ -81,6 +83,30 @@ export default function QuizPage() {
   const [answers, setAnswers] = useState<PlanQuizAnswers>(product.emptyQuizAnswers)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function hydrate() {
+      try {
+        const response = await fetch('/api/me/preferences')
+        if (!response.ok || cancelled) return
+        const body: unknown = await response.json()
+        const profileBody = body as { profile?: unknown }
+        if (!profileBody.profile) return
+        const parsed = parsePreferenceProfile(product.id, profileBody.profile)
+        if (!parsed.success || cancelled) return
+        setAnswers((prev) => applyPreferenceProfile(prev, parsed.data))
+      } catch {
+        // Guest quiz continues without saved defaults.
+      }
+    }
+
+    void hydrate()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const steps = product.getQuizSteps(answers)
   const step = steps[Math.min(stepIndex, steps.length - 1)]

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { ButtonLink, SoftButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Heading } from '@/components/elements/heading'
+import { SavePreferencesCard } from '@/components/elements/save-preferences-card'
 import { Text } from '@/components/elements/text'
 import { datePlanSchema, getProduct, type DatePlan } from '@betterdate/shared'
 
@@ -128,16 +129,18 @@ export default function PlanPage() {
         </ol>
 
         <div className="mt-14 space-y-8 border-t border-mauve-950/10 pt-10 dark:border-white/10">
-          <div>
-            <h3 className="font-display text-xl tracking-tight text-mauve-950 dark:text-white">
-              {product.conversationStartersLabel}
-            </h3>
-            <ul className="mt-4 list-disc space-y-2 pl-5 text-sm/7 text-mauve-700 dark:text-mauve-400">
-              {plan.conversationStarters.map((starter) => (
-                <li key={starter}>{starter}</li>
-              ))}
-            </ul>
-          </div>
+          {product.showConversationStarters && plan.conversationStarters.length > 0 && (
+            <div>
+              <h3 className="font-display text-xl tracking-tight text-mauve-950 dark:text-white">
+                {product.conversationStartersLabel}
+              </h3>
+              <ul className="mt-4 list-disc space-y-2 pl-5 text-sm/7 text-mauve-700 dark:text-mauve-400">
+                {plan.conversationStarters.map((starter) => (
+                  <li key={starter}>{starter}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div>
             <h3 className="font-display text-xl tracking-tight text-mauve-950 dark:text-white">Backup idea</h3>
@@ -147,7 +150,11 @@ export default function PlanPage() {
           <p className="text-sm/7 text-mauve-600 dark:text-mauve-500">{plan.disclaimer}</p>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center gap-4">
+        <div className="mt-12">
+          <SavePreferencesCard />
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center gap-4">
           <ButtonLink href="/quiz" size="lg">
             Plan another
           </ButtonLink>

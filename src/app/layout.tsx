@@ -1,4 +1,5 @@
 import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
+import { AuthNav, AuthNavMobileLink } from '@/components/elements/auth-nav'
 import { Main } from '@/components/elements/main'
 import {
   FooterCategory,
@@ -80,6 +81,7 @@ export default function RootLayout({
             <>
               <NavbarLink href="/#how-it-works">How it works</NavbarLink>
               <NavbarLink href="/about">About</NavbarLink>
+              <AuthNavMobileLink />
               <NavbarLink href="/quiz" className="sm:hidden">
                 {product.ctaLabel}
               </NavbarLink>
@@ -92,7 +94,8 @@ export default function RootLayout({
           }
           actions={
             <>
-              <PlainButtonLink href="/#how-it-works" className="max-sm:hidden">
+              <AuthNav />
+              <PlainButtonLink href="/#how-it-works" className="max-sm:hidden lg:hidden">
                 How it works
               </PlainButtonLink>
               <ButtonLink href="/quiz">{product.ctaLabel}</ButtonLink>
