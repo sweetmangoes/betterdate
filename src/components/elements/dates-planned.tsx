@@ -4,10 +4,8 @@ export function formatDatesPlanned(n: number) {
   return n.toLocaleString('en-US')
 }
 
-/** Quiet live count under the Better Date signup form. Hidden until the first real plan. */
+/** Quiet live count under the Better Date signup form. */
 export function DatesPlannedTicker({ count, className }: { count: number; className?: string }) {
-  if (count < 1) return null
-
   return (
     <p className={clsx('mt-6 flex items-baseline gap-2.5', className)}>
       <span className="font-display text-[1.75rem]/none tracking-tight text-rose-700 tabular-nums dark:text-rose-300">

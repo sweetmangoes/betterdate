@@ -53,7 +53,13 @@ export const metadata: Metadata = {
 function ProductMark({ className }: { className?: string }) {
   return (
     <span className={className}>
-      <span className="font-display text-xl font-medium tracking-tight text-mauve-950 dark:text-white">
+      <span
+        className={
+          textingFirst
+            ? 'font-display text-xl font-medium tracking-tight text-rose-700 dark:text-rose-300'
+            : 'font-display text-xl font-medium tracking-tight text-mauve-950 dark:text-white'
+        }
+      >
         {product.name}
       </span>
     </span>
@@ -85,7 +91,7 @@ export default function RootLayout({
               <NavbarLink href="/about">About</NavbarLink>
               <AuthNavMobileLink />
               <NavbarLink href={textingFirst ? '/#text-us' : '/quiz'} className="sm:hidden">
-                {textingFirst ? 'Text us' : product.ctaLabel}
+                {textingFirst ? 'Text me' : product.ctaLabel}
               </NavbarLink>
             </>
           }
@@ -101,20 +107,20 @@ export default function RootLayout({
                 How it works
               </PlainButtonLink>
               <ButtonLink href={textingFirst ? '/#text-us' : '/quiz'}>
-                {textingFirst ? 'Text us' : product.ctaLabel}
+                {textingFirst ? 'Text me' : product.ctaLabel}
               </ButtonLink>
             </>
           }
         />
 
-        <Main>{children}</Main>
+        <Main className={textingFirst ? undefined : 'overflow-clip'}>{children}</Main>
 
         <FooterWithLinkCategories
           id="footer"
           links={
             <>
               <FooterCategory title="Product">
-                {textingFirst && <FooterLink href="/#text-us">Text us</FooterLink>}
+                {textingFirst && <FooterLink href="/#text-us">Text me</FooterLink>}
                 <FooterLink href="/quiz">{textingFirst ? 'Take the quiz' : product.ctaLabel}</FooterLink>
                 <FooterLink href="/#how-it-works">How it works</FooterLink>
                 {textingFirst && <FooterLink href="/pricing">Pricing</FooterLink>}

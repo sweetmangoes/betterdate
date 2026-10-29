@@ -66,6 +66,12 @@ create table if not exists public.plan_counters (
 
 alter table public.plan_counters enable row level security;
 
+drop policy if exists "Anyone can read plan counters" on public.plan_counters;
+create policy "Anyone can read plan counters"
+  on public.plan_counters
+  for select
+  using (true);
+
 insert into public.plan_counters (product, dates_planned)
 values
   ('date', (select count(*) from public.plans where product = 'date')),

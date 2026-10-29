@@ -55,7 +55,19 @@ export const DEMO_PLAN: DatePlan = {
   disclaimer: 'Places come from Google Maps. Check hours and reservations before you go.',
 }
 
+import { createClient } from '@supabase/supabase-js'
+
 import { getAdminSupabaseClient } from '@/lib/supabase/admin'
+import { getSupabasePublicEnv } from '@/lib/supabase/config'
+
+function getReadableSupabase() {
+  const admin = getAdminSupabaseClient()
+  if (admin) return admin
+
+  const env = getSupabasePublicEnv()
+  if (!env) return null
+  return createClient(env.url, env.anonKey, { auth: { persistSession: false, autoRefreshToken: false } })
+}
 
 const ID_ALPHABET = 'abcdefghijkmnpqrstuvwxyz23456789'
 
@@ -90,10 +102,10 @@ async function bumpDatesPlanned(product: ProductId): Promise<number | null> {
   return typeof data === 'number' ? data : null
 }
 
-/** Public ticker total. Null when the database isn’t configured. */
-export async function getDatesPlanned(product: ProductId): Promise<number | null> {
-  const supabase = getAdminSupabaseClient()
-  if (!supabase) return null
+/** Public ticker total. 0 when the database isn’t configured or the counter table isn’t there yet. */
+export async function getDatesPlanned(product: ProductId): Promise<number> {
+  const supabase = getReadableSupabase()
+  if (!supabase) return 0
 
   const { data, error } = await supabase.from('plan_counters').select('dates_planned').eq('product', product).maybeSingle()
   if (!error && data && typeof data.dates_planned === 'number') {
@@ -101,10 +113,7 @@ export async function getDatesPlanned(product: ProductId): Promise<number | null
   }
 
   const counted = await supabase.from('plans').select('id', { count: 'exact', head: true }).eq('product', product)
-  if (counted.error) {
-    console.error('Failed to read dates planned', counted.error)
-    return null
-  }
+  if (counted.error) return 0
   return counted.count ?? 0
 }
 

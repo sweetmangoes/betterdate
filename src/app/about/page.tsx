@@ -63,7 +63,7 @@ export default function Page() {
           product.id === 'date' ? (
             <div className="flex flex-wrap items-center justify-center gap-3">
               <ButtonLink href="/#text-us" size="lg">
-                Text us
+                Text me
               </ButtonLink>
               <PlainButtonLink href="/quiz" size="lg">
                 Take the quiz

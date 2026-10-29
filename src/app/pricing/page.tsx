@@ -22,7 +22,7 @@ export default function Page() {
         <p className="text-sm/7 font-semibold text-rose-700 dark:text-rose-300">Pricing</p>
         <Heading className="mt-2">Start free. Upgrade when you’re dating a lot.</Heading>
         <Text size="lg" className="mt-5 max-w-2xl">
-          Text us or take the quiz. Free is enough to try a real plan. Pro is for people who want the AI to remember
+          Text me or take the quiz. Free is enough to try a real plan. Pro is for people who want the AI to remember
           what you’ve already done.
         </Text>
 
@@ -36,7 +36,7 @@ export default function Page() {
               <li>Nothing saved after the date</li>
             </ul>
             <ButtonLink href="/#text-us" size="lg" className="mt-6">
-              Text us
+              Text me
             </ButtonLink>
           </div>
           <div className="rounded-3xl border border-rose-600 bg-mauve-50 p-7 dark:border-rose-400 dark:bg-white/5">
