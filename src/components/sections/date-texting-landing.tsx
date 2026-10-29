@@ -14,12 +14,12 @@ const howSteps = [
   {
     num: '01',
     headline: 'Tell me the vibe',
-    body: 'Who it’s with, where you’re coming from, budget, what to avoid. Type it here or reply once I text you.',
+    body: 'Tonight or this weekend, who it’s with, where you’re coming from. Type it here or reply once I text you.',
   },
   {
     num: '02',
-    headline: 'Open a plan you can actually use',
-    body: 'Real places from Google Maps, a route, timing, and a backup idea — as a link on your phone.',
+    headline: 'Get a plan you can book',
+    body: 'Real places from Google Maps, a route, what to reserve, and a backup — as a link on your phone.',
   },
   {
     num: '03',
@@ -44,12 +44,13 @@ export function DateTextingLanding({ datesPlanned }: { datesPlanned?: number | n
       <section id="text-us" className="scroll-mt-24 px-6 pt-16 pb-10 sm:pt-24">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-display text-[2.625rem]/none tracking-tight text-balance text-mauve-950 sm:text-[4.25rem] dark:text-white">
-            I’ll plan your date.
+            Last-minute date?
             <br />
-            Text me.
+            I’ll plan it.
           </h1>
           <Text size="lg" className="mx-auto mt-6 max-w-xl text-pretty">
-            Tell me the vibe. I’ll text back a plan with real places near you both, then remind you to book.
+            Tonight, Friday, whenever you left it too late. Text me the vibe — I’ll send real places near you both that
+            you can book and go.
           </Text>
           <MessageComposer className="mx-auto mt-10 max-w-[560px]" />
           <p className="mt-5 text-sm/6 text-mauve-600 dark:text-mauve-400">I’ll text you — SMS or WhatsApp. Canada for now.</p>
@@ -114,10 +115,10 @@ export function DateTextingLanding({ datesPlanned }: { datesPlanned?: number | n
           <TextThread
             contactName="Better Date"
             messages={[
-              { from: 'me', text: 'first date Friday, she’s in the Glebe' },
-              { from: 'ai', text: 'Love it. You’re in Orleans?' },
+              { from: 'me', text: 'tonight, she’s in the Glebe, keep it easy' },
+              { from: 'ai', text: 'Got it. You’re in Orleans?' },
               { from: 'me', text: 'yeah. cozy, she loves sushi' },
-              { from: 'ai', text: 'Halfway it is. Here’s Friday:' },
+              { from: 'ai', text: 'Halfway. Here’s tonight:' },
               {
                 from: 'ai',
                 link: { label: 'Better Date', title: 'Sushi & a slow walk, 7 PM', subtitle: '3 stops near Elgin St' },

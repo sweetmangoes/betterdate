@@ -108,7 +108,16 @@ create table if not exists public.sms_contacts (
   consented_at timestamptz not null default now(),
   opted_out_at timestamptz,
   welcome_sent_at timestamptz,
+  first_message text,
+  area text,
+  last_plan_id text,
+  last_inbound_at timestamptz,
   primary key (phone, product)
 );
+
+alter table public.sms_contacts add column if not exists first_message text;
+alter table public.sms_contacts add column if not exists area text;
+alter table public.sms_contacts add column if not exists last_plan_id text;
+alter table public.sms_contacts add column if not exists last_inbound_at timestamptz;
 
 alter table public.sms_contacts enable row level security;

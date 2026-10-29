@@ -7,15 +7,15 @@ import { useEffect, useState, useTransition, type FormEvent } from 'react'
 import { normalizePhone, SMS_CONSENT_TEXT } from '@/lib/sms-consent'
 
 const VIBE_PLACEHOLDERS = [
-  'first date Friday, she’s in the Glebe',
-  'anniversary, cozy, under $100',
-  'casual drinks near Elgin',
+  'tonight, she’s in the Glebe, keep it easy',
+  'last-minute Friday, cozy, under $80',
+  'need a plan in 2 hours, drinks near Elgin',
 ]
 
 const VIBE_EXAMPLES = [
-  { label: 'First date Friday', value: 'first date Friday, she’s in the Glebe' },
-  { label: 'Anniversary, cozy', value: 'anniversary, cozy, under $100' },
-  { label: 'Drinks near Elgin', value: 'casual drinks near Elgin' },
+  { label: 'Tonight, easy', value: 'tonight, she’s in the Glebe, keep it easy' },
+  { label: 'Last-minute Friday', value: 'last-minute Friday, cozy, under $80' },
+  { label: 'Drinks in 2 hours', value: 'need a plan in 2 hours, drinks near Elgin' },
 ]
 
 const FIRST_MESSAGE_KEY = 'betterdate:firstMessage'
@@ -65,7 +65,7 @@ export function MessageComposer({
         const response = await fetch('/api/sms/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, consent: true }),
+          body: JSON.stringify({ phone, consent: true, firstMessage: vibe.trim() || undefined }),
         })
         const body = (await response.json().catch(() => ({}))) as { error?: string; texted?: boolean }
         if (!response.ok) {

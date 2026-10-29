@@ -134,8 +134,8 @@ export const dateProduct: ProductConfig = {
   id: 'date',
   name: 'Better Date',
   description:
-    'Text Better Date the vibe. Get a plan with real places near you both, a reminder to book, and a check-in after.',
-  titleDefault: 'Better Date — AI date plans for first dates and couples',
+    'Last-minute date? Text Better Date the vibe. Get a plan with real places near you both that you can book and go.',
+  titleDefault: 'Better Date — Last-minute date plans, by text',
   planStorageKey: PLAN_STORAGE_KEY,
   quizStorageKey: QUIZ_STORAGE_KEY,
   ctaLabel: 'Plan a date',
