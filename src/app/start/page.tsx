@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { ButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { Heading } from '@/components/elements/heading'
 import { Text } from '@/components/elements/text'
@@ -10,15 +11,22 @@ import { getProduct } from '@/lib/product'
 import { formatPhone } from '@/lib/sms-consent'
 import { getTwilioPhoneNumber } from '@/lib/twilio'
 
-export const metadata: Metadata = {
-  title: 'Check your phone',
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ waitlist?: string }>
+}): Promise<Metadata> {
+  const { waitlist } = await searchParams
+  return {
+    title: waitlist ? 'You’re on the list' : 'Check your phone',
+    robots: { index: false, follow: false },
+  }
 }
 
 const nextSteps = [
-  ['Reply to the text', 'Tell us who the date’s with and when.'],
-  ['Get your plan link', 'Usually under a minute once we know the basics.'],
-  ['Book and go', 'We’ll remind you. Reply STOP anytime to stop texts.'],
+  ['Reply to the text', 'Who it’s with, when, and where you’re both coming from.'],
+  ['Open your plan', 'A link with real places, a route, and a backup idea.'],
+  ['Book and go', 'I’ll remind you. Reply STOP anytime to stop texts.'],
 ]
 
 export default async function StartPage({ searchParams }: { searchParams: Promise<{ waitlist?: string }> }) {
@@ -32,15 +40,15 @@ export default async function StartPage({ searchParams }: { searchParams: Promis
       <section className="py-20 sm:py-28">
         <Container className="max-w-xl lg:max-w-xl">
           <p className="text-sm/7 font-semibold text-rose-700 dark:text-rose-300">You’re on the list</p>
-          <Heading className="mt-2 text-4xl/11 sm:text-5xl/12">We’ll text you soon.</Heading>
+          <Heading className="mt-2 text-4xl/11 sm:text-5xl/12">I’ll text you when it’s your turn.</Heading>
           <Text size="lg" className="mt-5">
-            Planning by text is opening up in small batches. We saved your number and will text you as soon as it’s your
-            turn. Until then, the quiz gets you a plan in two minutes.
+            Your number is saved. Texting is opening in small batches — you don’t need to sign up again. You can still
+            get a plan right now in the browser.
           </Text>
           <p className="mt-8">
-            <Link href="/quiz" className="font-semibold text-rose-700 underline-offset-4 hover:underline dark:text-rose-300">
-              Take the quiz →
-            </Link>
+            <ButtonLink href="/quiz" size="lg">
+              Get a plan now — 2-minute quiz
+            </ButtonLink>
           </p>
         </Container>
       </section>
@@ -54,7 +62,7 @@ export default async function StartPage({ searchParams }: { searchParams: Promis
           <p className="text-sm/7 font-semibold text-rose-700 dark:text-rose-300">You’re in</p>
           <Heading className="mt-2 text-5xl/12">Check your phone.</Heading>
           <Text size="lg" className="mt-5 max-w-lg">
-            We just texted you from{' '}
+            I just texted you from{' '}
             <a href={`sms:${fromNumber}`} className="font-semibold text-mauve-950 dark:text-white">
               {formatPhone(fromNumber)}
             </a>

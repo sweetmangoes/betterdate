@@ -45,7 +45,7 @@ export function NavbarWithLinksActionsAndCenteredLogo({
   actions: ReactNode
 } & ComponentProps<'header'>) {
   return (
-    <header className={clsx('sticky top-0 z-10 bg-mauve-100 dark:bg-mauve-950', className)} {...props}>
+    <header className={clsx('sticky top-0 z-40 bg-mauve-100/90 backdrop-blur-md dark:bg-mauve-950/90', className)} {...props}>
       <style>{`:root { --scroll-padding-top: 5.25rem }`}</style>
       <nav>
         <div className="mx-auto flex h-(--scroll-padding-top) max-w-7xl items-center gap-4 px-6 lg:px-10">

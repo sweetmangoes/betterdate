@@ -1,8 +1,9 @@
 import type { DatePlan } from '@betterdate/shared'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { ButtonLink } from '@/components/elements/button'
+import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
 import { DateNumberBanner } from '@/components/elements/dates-planned'
 import { Heading } from '@/components/elements/heading'
@@ -52,6 +53,7 @@ export default async function SavedPlanPage({ params }: Props) {
   if (!saved) notFound()
 
   const product = getProduct()
+  const isDemo = saved.id === 'demo'
   const { plan } = saved
   const stops = [...plan.stops].sort((a, b) => a.order - b.order)
   const hasCoordinates = stops.some((stop) => stop.lat != null)
@@ -62,7 +64,24 @@ export default async function SavedPlanPage({ params }: Props) {
     <section className="py-10 sm:py-14">
       <Container className="grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
         <div>
-          <p className="text-sm/7 font-semibold text-rose-700 dark:text-rose-300">{product.planEyebrow}</p>
+          {isDemo && (
+            <div className="mb-6 rounded-3xl border border-rose-600/20 bg-rose-50/70 px-5 py-4 dark:border-rose-400/20 dark:bg-rose-950/30">
+              <p className="text-sm/6 font-semibold text-mauve-950 dark:text-white">This is a sample plan, not yours yet.</p>
+              <p className="mt-1 text-sm/6 text-mauve-700 dark:text-mauve-400">
+                <Link href="/#text-us" className="font-semibold text-rose-700 underline-offset-4 hover:underline dark:text-rose-300">
+                  Text me
+                </Link>{' '}
+                or{' '}
+                <Link href="/quiz" className="font-semibold text-rose-700 underline-offset-4 hover:underline dark:text-rose-300">
+                  take the quiz
+                </Link>{' '}
+                to get a real one.
+              </p>
+            </div>
+          )}
+          <p className="text-sm/7 font-semibold text-rose-700 dark:text-rose-300">
+            {isDemo ? 'Sample plan' : product.planEyebrow}
+          </p>
           <Heading className="mt-2 text-4xl/11 sm:text-5xl/12">{plan.title}</Heading>
           <Text size="lg" className="mt-4 text-pretty">
             {plan.summary}
@@ -146,7 +165,7 @@ export default async function SavedPlanPage({ params }: Props) {
             <SharePlanButton title={plan.title} />
           </div>
 
-          {textNumber && (
+          {textNumber && !isDemo && (
             <div className="flex items-center justify-between gap-4 rounded-3xl bg-mauve-950 px-6 py-5 text-white dark:bg-white/10">
               <p className="text-sm/6">
                 Want to change something?
@@ -163,12 +182,23 @@ export default async function SavedPlanPage({ params }: Props) {
 
           <p className="text-xs/5 text-mauve-500">{plan.disclaimer}</p>
 
-          <SavePreferencesCard />
+          {!isDemo && <SavePreferencesCard />}
 
-          <div>
-            <ButtonLink href="/quiz" size="lg">
-              Plan another
-            </ButtonLink>
+          <div className="flex flex-wrap gap-3">
+            {isDemo ? (
+              <>
+                <ButtonLink href="/#text-us" size="lg">
+                  Text me for yours
+                </ButtonLink>
+                <PlainButtonLink href="/quiz" size="lg">
+                  Take the quiz
+                </PlainButtonLink>
+              </>
+            ) : (
+              <ButtonLink href="/quiz" size="lg">
+                Plan another
+              </ButtonLink>
+            )}
           </div>
         </div>
       </Container>

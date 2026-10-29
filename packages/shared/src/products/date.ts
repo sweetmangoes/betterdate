@@ -134,7 +134,7 @@ export const dateProduct: ProductConfig = {
   id: 'date',
   name: 'Better Date',
   description:
-    'Eliminate bad dates. Plan thoughtful, intentional nights from your preferences — toward a world without bad dates.',
+    'Text Better Date the vibe. Get a plan with real places near you both, a reminder to book, and a check-in after.',
   titleDefault: 'Better Date — AI date plans for first dates and couples',
   planStorageKey: PLAN_STORAGE_KEY,
   quizStorageKey: QUIZ_STORAGE_KEY,
@@ -253,7 +253,7 @@ export const dateProduct: ProductConfig = {
     visionBody:
       'Whether it’s date one or date one hundred, the bar is the same: a plan that fits you, in your city, that you can actually follow through on.',
     ctaHeadline: 'Ready to plan better?',
-    ctaSubheadline: 'Take the quiz and get a thoughtful local date plan in minutes.',
+    ctaSubheadline: 'Text me the vibe, or take the quiz. You’ll get a local plan with real places.',
     ctaButton: 'Start the quiz',
   },
 }

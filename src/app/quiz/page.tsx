@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 
@@ -186,6 +187,14 @@ export default function QuizPage() {
     <section className="py-12 sm:py-16">
       <Container className="max-w-xl lg:max-w-xl">
         <div className="mb-10">
+          {product.id === 'date' && (
+            <p className="mb-4 text-sm/7 text-mauve-600 dark:text-mauve-400">
+              Planning in the browser.{' '}
+              <Link href="/#text-us" className="font-semibold text-rose-700 underline-offset-4 hover:underline dark:text-rose-300">
+                Prefer a text? Tell me the vibe instead.
+              </Link>
+            </p>
+          )}
           <p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">
             Step {Math.min(stepIndex, steps.length - 1) + 1} of {steps.length}
           </p>
