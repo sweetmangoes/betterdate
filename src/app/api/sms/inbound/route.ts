@@ -15,10 +15,18 @@ import {
 } from '@/lib/sms-agent'
 import { extractLocation } from '@/lib/sms-from-text'
 import { getAdminSupabaseClient } from '@/lib/supabase/admin'
-import { isValidTwilioSignature, sendSms, twilioWebhookUrl, twimlEmpty, twimlMessage } from '@/lib/twilio'
+import { isValidTwilioSignature, sendSms, twilioWebhookUrl, twimlEmpty } from '@/lib/twilio'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
+
+async function replySms(to: string, body: string) {
+  try {
+    await sendSms(to, body)
+  } catch (error) {
+    console.error('Failed to send inbound SMS', error)
+  }
+}
 
 export async function POST(request: Request) {
   const product = getProduct()
@@ -39,14 +47,21 @@ export async function POST(request: Request) {
   if (!from) return twimlEmpty()
 
   const supabase = getAdminSupabaseClient()
-  if (!supabase) return twimlMessage('Texting isn’t fully set up yet. Try betterdate.app/quiz')
+  if (!supabase) {
+    await replySms(from, 'Texting isn’t fully set up yet. Try the quiz on the site.')
+    return twimlEmpty()
+  }
 
   if (isStopCommand(body)) {
     await supabase.from('sms_contacts').update({ opted_out_at: new Date().toISOString() }).eq('phone', from).eq('product', product.id)
-    return twimlMessage(STOP_REPLY)
+    await replySms(from, STOP_REPLY)
+    return twimlEmpty()
   }
 
-  if (isHelpCommand(body)) return twimlMessage(HELP_REPLY)
+  if (isHelpCommand(body)) {
+    await replySms(from, HELP_REPLY)
+    return twimlEmpty()
+  }
 
   const { data: contact } = await supabase
     .from('sms_contacts')
@@ -64,11 +79,13 @@ export async function POST(request: Request) {
       consented_at: new Date().toISOString(),
       opted_out_at: null,
     })
-    return twimlMessage(START_REPLY)
+    await replySms(from, START_REPLY)
+    return twimlEmpty()
   }
 
   if (!contact || contact.opted_out_at) {
-    return twimlMessage(`Hey, it’s Better Date. Sign up at ${getSiteUrl()} first so I can text you a plan.`)
+    await replySms(from, `Hey, it’s Better Date. Sign up at ${getSiteUrl()} first so I can text you a plan.`)
+    return twimlEmpty()
   }
 
   const area = extractLocation(body) ?? contact.area ?? null
@@ -88,5 +105,6 @@ export async function POST(request: Request) {
     }
   })
 
-  return twimlMessage('On it — I’ll text a plan in a minute.')
+  await replySms(from, 'On it — I’ll text a plan in a minute.')
+  return twimlEmpty()
 }

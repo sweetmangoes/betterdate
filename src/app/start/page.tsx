@@ -14,7 +14,7 @@ import { getTwilioPhoneNumber } from '@/lib/twilio'
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ waitlist?: string }>
+  searchParams: Promise<{ waitlist?: string; trial?: string }>
 }): Promise<Metadata> {
   const { waitlist } = await searchParams
   return {
@@ -29,11 +29,16 @@ const nextSteps = [
   ['Book and go', 'I’ll remind you. Reply STOP anytime to stop texts.'],
 ]
 
-export default async function StartPage({ searchParams }: { searchParams: Promise<{ waitlist?: string }> }) {
+export default async function StartPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ waitlist?: string; trial?: string }>
+}) {
   if (getProduct().id !== 'date') notFound()
 
-  const { waitlist } = await searchParams
+  const { waitlist, trial } = await searchParams
   const fromNumber = getTwilioPhoneNumber()
+  const isTrial = Boolean(trial)
 
   if (waitlist || !fromNumber) {
     return (
@@ -66,7 +71,9 @@ export default async function StartPage({ searchParams }: { searchParams: Promis
             <a href={`sms:${fromNumber}`} className="font-semibold text-mauve-950 dark:text-white">
               {formatPhone(fromNumber)}
             </a>
-            . Reply to start planning. Save the number so you’ll recognize us.
+            {isTrial
+              ? '. Twilio’s trial can only send their sample “appointment reminder” text — not our real date-plan wording yet. Upgrade the Twilio account when you want the real copy and plan links.'
+              : '. Reply to start planning. Save the number so you’ll recognize us.'}
           </Text>
           <ol className="mt-8 max-w-lg">
             {nextSteps.map(([title, body], index) => (

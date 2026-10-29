@@ -87,9 +87,11 @@ export async function POST(request: Request) {
   const lastWelcome = existing?.welcome_sent_at ? new Date(existing.welcome_sent_at).getTime() : 0
   const skipWelcome = Date.now() - lastWelcome < WELCOME_COOLDOWN_MS
 
+  let usedTrialTemplate = false
   try {
     if (!skipWelcome) {
-      await sendSms(phone, welcomeSms(firstMessage))
+      const sent = await sendSms(phone, welcomeSms(firstMessage))
+      usedTrialTemplate = sent.usedTrialTemplate
       await supabase.from('sms_contacts').update({ welcome_sent_at: new Date().toISOString() }).eq('phone', phone).eq('product', product.id)
     }
   } catch (error) {
@@ -97,17 +99,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: twilioUserMessage(error) }, { status: 502 })
   }
 
-  after(async () => {
-    const result = await sendPlanFromText(phone, firstMessage ?? '', area)
-    if (result === 'need_area' && !skipWelcome) {
-      // Welcome already asked for a neighborhood when we didn’t have one.
-      return
-    }
-    if (result === 'need_area') await sendSms(phone, NEED_AREA_REPLY)
-    if (result === 'failed') {
-      await sendSms(phone, 'I couldn’t build that plan yet. Reply with a neighborhood, or take the quiz on the site.')
-    }
-  })
+  // Trial templates can't carry a plan link. Skip generation until the Twilio account is upgraded.
+  if (!usedTrialTemplate) {
+    after(async () => {
+      const result = await sendPlanFromText(phone, firstMessage ?? '', area)
+      if (result === 'need_area' && !skipWelcome) {
+        return
+      }
+      if (result === 'need_area') await sendSms(phone, NEED_AREA_REPLY)
+      if (result === 'failed') {
+        await sendSms(phone, 'I couldn’t build that plan yet. Reply with a neighborhood, or take the quiz on the site.')
+      }
+    })
+  }
 
-  return NextResponse.json({ ok: true, texted: true })
+  return NextResponse.json({ ok: true, texted: true, trialTemplate: usedTrialTemplate })
 }

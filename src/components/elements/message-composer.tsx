@@ -67,9 +67,17 @@ export function MessageComposer({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, consent: true, firstMessage: vibe.trim() || undefined }),
         })
-        const body = (await response.json().catch(() => ({}))) as { error?: string; texted?: boolean }
+        const body = (await response.json().catch(() => ({}))) as {
+          error?: string
+          texted?: boolean
+          trialTemplate?: boolean
+        }
         if (!response.ok) {
           setError(body.error ?? 'Something went wrong. Please try again.')
+          return
+        }
+        if (body.trialTemplate) {
+          router.push('/start?trial=1')
           return
         }
         router.push(body.texted ? '/start' : '/start?waitlist=1')

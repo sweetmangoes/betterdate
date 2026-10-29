@@ -46,6 +46,9 @@ export function twimlMessage(body: string): Response {
   })
 }
 
+/** Closest trial template to a date plan. Custom bodies need an upgraded Twilio account. */
+export const TWILIO_TRIAL_TEMPLATE = 'sms_appointment_reminders'
+
 export function twilioUserMessage(error: unknown): string {
   const code = error instanceof TwilioSendError ? error.code : undefined
   if (code === 21608 || code === 14111) {
@@ -53,6 +56,9 @@ export function twilioUserMessage(error: unknown): string {
   }
   if (code === 21610) {
     return 'That number is unsubscribed. Reply START to the last text, then try again.'
+  }
+  if (code === 572006) {
+    return 'Twilio’s trial can only send their sample texts, not our date-plan wording. Upgrade the Twilio account to send the real message.'
   }
   return 'We couldn’t text that number. Check it and try again.'
 }
@@ -66,8 +72,9 @@ export class TwilioSendError extends Error {
   }
 }
 
-/** Sends one SMS through the Twilio REST API. */
-export async function sendSms(to: string, body: string): Promise<{ sid: string }> {
+export type SendSmsResult = { sid: string; usedTrialTemplate: boolean }
+
+async function createMessage(to: string, body: string): Promise<{ sid: string }> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID?.trim()
   const authToken = process.env.TWILIO_AUTH_TOKEN?.trim()
   const from = getTwilioPhoneNumber()
@@ -90,4 +97,19 @@ export async function sendSms(to: string, body: string): Promise<{ sid: string }
     throw new TwilioSendError(data.message ?? `Twilio request failed (${response.status}).`, Number.isFinite(code) ? code : undefined)
   }
   return { sid: data.sid }
+}
+
+/** Sends one SMS. On a Twilio trial, custom copy is blocked so we retry with their appointment-reminder template. */
+export async function sendSms(to: string, body: string): Promise<SendSmsResult> {
+  try {
+    const { sid } = await createMessage(to, body)
+    return { sid, usedTrialTemplate: false }
+  } catch (error) {
+    if (error instanceof TwilioSendError && error.code === 572006) {
+      const { sid } = await createMessage(to, TWILIO_TRIAL_TEMPLATE)
+      console.warn(`Twilio trial blocked custom SMS. Sent ${TWILIO_TRIAL_TEMPLATE} instead.`)
+      return { sid, usedTrialTemplate: true }
+    }
+    throw error
+  }
 }
