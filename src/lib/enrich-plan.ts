@@ -61,6 +61,8 @@ export function enrichPlanFromCandidates(
         address: place.address,
         mapsUrl: place.mapsUrl,
         rating: place.rating,
+        lat: place.lat || undefined,
+        lng: place.lng || undefined,
       }
     })
     .filter((stop): stop is NonNullable<typeof stop> => stop != null)

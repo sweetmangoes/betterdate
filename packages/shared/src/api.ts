@@ -9,6 +9,10 @@ export const planApiSuccessSchema = z.object({
   plan: datePlanSchema,
   answers: z.union([dateQuizAnswersSchema, friendsQuizAnswersSchema]).optional(),
   grounded: z.boolean().optional(),
+  /** Set when the plan was saved and can be opened at `/p/[planId]`. */
+  planId: z.string().optional(),
+  /** Sequential “you’re date #N” after a successful generate. */
+  dateNumber: z.number().int().positive().optional(),
 })
 
 export const planApiErrorSchema = z.object({

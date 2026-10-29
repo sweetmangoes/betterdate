@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { ButtonLink } from '@/components/elements/button'
+import { ButtonLink, PlainButtonLink } from '@/components/elements/button'
 import { Section } from '@/components/elements/section'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
 import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
@@ -60,9 +60,20 @@ export default function Page() {
         headline={about.ctaHeadline}
         subheadline={<p>{about.ctaSubheadline}</p>}
         cta={
-          <ButtonLink href="/quiz" size="lg">
-            {about.ctaButton}
-          </ButtonLink>
+          product.id === 'date' ? (
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <ButtonLink href="/#text-us" size="lg">
+                Text us
+              </ButtonLink>
+              <PlainButtonLink href="/quiz" size="lg">
+                Take the quiz
+              </PlainButtonLink>
+            </div>
+          ) : (
+            <ButtonLink href="/quiz" size="lg">
+              {about.ctaButton}
+            </ButtonLink>
+          )
         }
       />
     </>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Better Boyfriend — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --m50: oklch(98.2% 0.008 75);
+    --m100: oklch(96.4% 0.012 70);
+    --m200: oklch(91.5% 0.014 65);
+    --m300: oklch(84% 0.016 55);
+    --m400: oklch(68% 0.02 45);
+    --m500: oklch(52% 0.022 40);
+    --m700: oklch(34% 0.018 35);
+    --m900: oklch(20% 0.012 30);
+    --m950: oklch(15% 0.01 28);
+    --r50: oklch(97% 0.015 15);
+    --r100: oklch(94% 0.03 15);
+    --r200: oklch(88% 0.05 15);
+    --r300: oklch(78% 0.08 15);
+    --r500: oklch(58% 0.14 15);
+    --r600: oklch(50% 0.14 15);
+    --r700: oklch(42% 0.12 15);
+    --display: 'Fraunces', Georgia, serif;
+    --sans: 'Figtree', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--m950);
+    background: var(--m100);
+    -webkit-font-smoothing: antialiased;
+    padding: 56px 32px 80px;
+  }
+  .page { max-width: 1320px; margin: 0 auto; }
+
+  header.intro { max-width: 760px; margin: 0 auto 56px; text-align: center; }
+  .eyebrow { font-family: var(--display); color: var(--r700); font-size: 26px; letter-spacing: -0.01em; }
+  h1 { font-family: var(--display); font-weight: 400; font-size: 52px; line-height: 1.05; letter-spacing: -0.02em; margin-top: 12px; }
+  .lede { margin-top: 18px; color: var(--m700); font-size: 17px; line-height: 1.6; }
+  .loop { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+  .loop span { font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 999px; background: var(--m50); border: 1px solid var(--m200); color: var(--m700); }
+  .loop span b { color: var(--r600); margin-right: 6px; }
+
+  .side { margin-top: 48px; }
+  .side-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid var(--m200); }
+  .side-head h2 { font-family: var(--display); font-weight: 400; font-size: 28px; letter-spacing: -0.01em; }
+  .side-head p { color: var(--m500); font-size: 14px; }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; }
+  .shot { width: 300px; }
+  .caption { margin-top: 14px; font-size: 13px; line-height: 1.5; color: var(--m700); }
+  .caption b { display: block; color: var(--m950); font-size: 14px; margin-bottom: 2px; }
+
+  /* Phone */
+  .phone {
+    width: 300px; height: 620px; border-radius: 44px; background: var(--m950);
+    padding: 10px; position: relative;
+  }
+  .screen {
+    width: 100%; height: 100%; border-radius: 35px; overflow: hidden; background: var(--m50);
+    display: flex; flex-direction: column; position: relative;
+  }
+  .status { height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .island { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 88px; height: 24px; background: var(--m950); border-radius: 20px; }
+  .body { flex: 1; padding: 6px 18px 18px; display: flex; flex-direction: column; overflow: hidden; }
+  .brand { font-family: var(--display); font-size: 15px; color: var(--r700); }
+  .h { font-family: var(--display); font-size: 25px; line-height: 1.12; letter-spacing: -0.015em; margin-top: 10px; }
+  .sub { font-size: 13px; color: var(--m500); line-height: 1.5; margin-top: 8px; }
+  .btn { display: block; text-align: center; background: var(--m950); color: var(--m50); font-weight: 600; font-size: 14px; padding: 13px; border-radius: 999px; }
+  .btn.rose { background: var(--r600); }
+  .btn.ghost { background: transparent; color: var(--m950); border: 1px solid var(--m300); }
+  .spacer { flex: 1; }
+  .label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--m500); }
+  .card { background: #fff0; border: 1px solid var(--m200); border-radius: 18px; padding: 12px 14px; background-color: oklch(100% 0 0); }
+  .card.rose { background: var(--r50); border-color: var(--r200); }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip { font-size: 12.5px; font-weight: 500; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--m300); background: oklch(100% 0 0); }
+  .chip.on { background: var(--m950); color: var(--m50); border-color: var(--m950); }
+  .progress { height: 4px; border-radius: 4px; background: var(--m200); margin-top: 4px; }
+  .progress i { display: block; height: 100%; width: 55%; background: var(--r500); border-radius: 4px; }
+  .muted { color: var(--m500); }
+  .small { font-size: 12px; }
+  .stack > * + * { margin-top: 10px; }
+  .kv { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--m200); }
+  .kv:last-child { border-bottom: 0; }
+  .kv span:first-child { color: var(--m500); }
+  .kv span:last-child { font-weight: 600; text-align: right; }
+
+  /* Messages screen */
+  .msgs { background: oklch(100% 0 0); }
+  .thread-top { text-align: center; padding: 4px 0 12px; border-bottom: 1px solid var(--m200); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--m200); margin: 0 auto 4px; display: grid; place-items: center; font-weight: 700; color: var(--m700); }
+  .bubbles { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .bub { max-width: 78%; font-size: 13.5px; line-height: 1.4; padding: 9px 13px; border-radius: 18px; }
+  .bub.me { align-self: flex-end; background: oklch(60% 0.17 255); color: white; }
+  .bub.them { align-self: flex-start; background: var(--m200); }
+  .linkcard { align-self: flex-end; width: 78%; border-radius: 18px; overflow: hidden; border: 1px solid var(--m200); }
+  .linkcard .art { height: 92px; background: var(--r100); display: grid; place-items: center; font-family: var(--display); font-size: 22px; color: var(--r700); }
+  .linkcard .meta { padding: 8px 12px; background: var(--m100); font-size: 12px; }
+  .linkcard .meta b { display: block; font-size: 13px; }
+
+  /* Him: home */
+  .countdown { display: flex; align-items: center; gap: 12px; }
+  .countdown .num { font-family: var(--display); font-size: 34px; line-height: 1; color: var(--r700); }
+  .hint { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.4; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--r500); margin-top: 6px; flex-shrink: 0; }
+  .tabbar { display: flex; justify-content: space-around; padding: 10px 0 14px; border-top: 1px solid var(--m200); font-size: 10.5px; font-weight: 600; color: var(--m400); flex-shrink: 0; background: var(--m50); }
+  .tabbar .on { color: var(--r600); }
+
+  /* Plan timeline */
+  .stop { display: grid; grid-template-columns: 44px 1fr; gap: 10px; }
+  .stop .t { font-size: 12px; font-weight: 700; color: var(--m500); padding-top: 2px; }
+  .stop .n { font-weight: 600; font-size: 14px; }
+  .stop .why { font-size: 12px; color: var(--r700); margin-top: 3px; line-height: 1.4; }
+  .stop .d { font-size: 12px; color: var(--m500); margin-top: 2px; }
+  .check { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 7px 0; }
+  .box { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--m300); flex-shrink: 0; }
+  .box.done { background: var(--r600); border-color: var(--r600); position: relative; }
+  .box.done::after { content: ''; position: absolute; left: 5px; top: 1.5px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .strike { text-decoration: line-through; color: var(--m400); }
+
+  /* Reveal */
+  .reveal { background: var(--r700); color: var(--r50); }
+  .reveal .brand { color: var(--r200); }
+  .reveal .sub { color: var(--r200); }
+  .reveal .card { background: oklch(100% 0 0 / 0.08); border-color: oklch(100% 0 0 / 0.18); color: var(--r50); }
+  .reveal .btn { background: var(--r50); color: var(--r700); }
+
+  .notes { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-top: 28px; border-top: 1px solid var(--m200); }
+  .notes h3 { font-family: var(--display); font-weight: 400; font-size: 20px; margin-bottom: 8px; }
+  .notes p, .notes li { font-size: 14px; line-height: 1.6; color: var(--m700); }
+  .notes ul { padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="intro">
+    <p class="eyebrow">Better Boyfriend</p>
+    <h1>Send him this app.</h1>
+    <p class="lede">She fills out what she actually likes once. He downloads the app, gets her cheat sheet, sees her hints, and plans dates she'll love. Same AI planner and Google Places engine as Better Date.</p>
+    <div class="loop">
+      <span><b>1</b>She takes the quiz</span>
+      <span><b>2</b>She texts him the link</span>
+      <span><b>3</b>He downloads & joins</span>
+      <span><b>4</b>He plans, she gets surprised</span>
+    </div>
+  </header>
+
+  <!-- HER SIDE -->
+  <section class="side">
+    <div class="side-head"><h2>Her side</h2><p>Takes about 3 minutes, all on the web, no download needed</p></div>
+    <div class="row">
+
+      <div class="shot">
+        <div class="phone"><div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Better Boyfriend</p>
+            <p class="h" style="margin-top:28px;font-size:30px">Tired of “idk, what do you want to do?”</p>
+            <p class="sub" style="font-size:14px">Tell us what you love once. We'll turn him into the guy who just <em>knows</em>.</p>
+            <div class="card rose" style="margin-top:22px">
+              <p class="small" style="line-height:1.5"><b>“He planned a sushi night + bookstore walk without asking me a single question.”</b></p>
+              <p class="small muted" style="margin-top:6px">Maya, 3 months in</p>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn rose">Build my profile</span>
+            <p class="small muted" style="text-align:center;margin-top:10px">He'll never see the quiz, only the results.</p>
+          </div>
+        </div></div>
+        <p class="caption"><b>Landing page (her)</b>Leads with the frustration she already has. The main button starts her profile.</p>
+      </div>
+
+      <div class="shot">
+        <div class="phone"><div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <div style="display:flex;justify-content:space-between" class="small muted"><span>Back</span><span>5 of 9</span></div>
+            <div class="progress"><i></i></div>
+            <p class="h">What's your ideal date vibe?</p>
+            <p class="sub">Pick all that apply.</p>
+            <div class="chips" style="margin-top:16px">
+              <span class="chip on">Cozy</span><span class="chip">Outdoorsy</span><span class="chip on">Foodie</span>
+              <span class="chip">Playful</span><span class="chip on">Culture</span><span class="chip">Nightlife</span>
+            </div>
+            <p class="label" style="margin-top:24px">Never again</p>
+            <div class="chips" style="margin-top:8px">
+              <span class="chip on">Loud sports bars</span><span class="chip">Bowling</span><span class="chip on">Chain restaurants</span>
+            </div>
+            <p class="label" style="margin-top:20px">Your love language</p>
+            <div class="chips" style="margin-top:8px">
+              <span class="chip">Words</span><span class="chip on">Quality time</span><span class="chip">Gifts</span><span class="chip">Acts</span><span class="chip">Touch</span>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn">Continue</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>Her preference quiz</b>Reuses the Better Date quiz (vibes, budget, energy) and adds "never again" and love language. These are what make his plans feel personal.</p>
+      </div>
+
+      <div class="shot">
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top">
+            <div class="avatar">J</div>
+            <p class="small" style="font-weight:600">Jordan</p>
+          </div>
+          <div class="bubbles">
+            <div class="bub them">what do u wanna do saturday</div>
+            <div class="bub me">ok I'm not answering that anymore 😌 download this</div>
+            <div class="linkcard">
+              <div class="art">Better Boyfriend</div>
+              <div class="meta"><b>Maya made you a cheat sheet</b>Her favorites, her hints, and date ideas she'll love.</div>
+            </div>
+            <div class="bub them">lmao ok downloading</div>
+          </div>
+        </div></div>
+        <p class="caption"><b>The invite (how it spreads)</b>After the quiz she gets a personal link and the share sheet. The link preview says it's from her, so he actually opens it.</p>
+      </div>
+
+      <div class="shot">
+        <div class="phone"><div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Better Boyfriend</p>
+            <p class="h">Drop a hint</p>
+            <p class="sub">He'll see it as a hint from you. He won't know exactly when you sent it.</p>
+            <div class="card" style="margin-top:16px;min-height:86px">
+              <p style="font-size:14px;line-height:1.45">That new omakase place on 5th looks so good</p>
+            </div>
+            <div class="chips" style="margin-top:12px">
+              <span class="chip on">Place to try</span><span class="chip">Gift idea</span><span class="chip">Something I miss</span>
+            </div>
+            <p class="label" style="margin-top:24px">Your hints</p>
+            <div class="stack" style="margin-top:10px">
+              <div class="hint"><span class="dot"></span><span>Want to try pottery class<br><span class="small muted">He planned it · Oct 4</span></span></div>
+              <div class="hint"><span class="dot" style="background:var(--m300)"></span><span>Running low on that candle<br><span class="small muted">Seen</span></span></div>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn rose">Send hint</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>Hints</b>A reason for her to keep coming back. When he acts on a hint, she sees "He planned it".</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HIS SIDE -->
+  <section class="side">
+    <div class="side-head"><h2>His side</h2><p>iOS app, opened from her invite link and already paired with her</p></div>
+    <div class="row">
+
+      <div class="shot">
+        <div class="phone"><div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Better Boyfriend</p>
+            <p class="h">Hey Jordan.</p>
+            <div class="card rose countdown" style="margin-top:14px">
+              <span class="num">12</span>
+              <span class="small"><b>days until your 6-month</b><br><span class="muted">Nothing planned yet</span></span>
+            </div>
+            <p class="label" style="margin-top:18px">New hints from Maya</p>
+            <div class="card stack" style="margin-top:8px">
+              <div class="hint"><span class="dot"></span><span>That new omakase place on 5th looks so good</span></div>
+              <div class="hint"><span class="dot"></span><span>Misses going to the farmers market</span></div>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn rose">Plan our 6-month</span>
+            <p class="small muted" style="text-align:center;margin-top:8px">Last date: 9 days ago</p>
+          </div>
+          <div class="tabbar"><span class="on">Home</span><span>Her</span><span>Plans</span><span>Profile</span></div>
+        </div></div>
+        <p class="caption"><b>Home</b>Shows what's coming up, her new hints, and one button to plan something.</p>
+      </div>
+
+      <div class="shot">
+        <div class="phone"><div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Maya's cheat sheet</p>
+            <p class="h">What she loves</p>
+            <div class="card" style="margin-top:14px;padding-top:4px;padding-bottom:4px">
+              <div class="kv"><span>Vibe</span><span>Cozy, foodie, culture</span></div>
+              <div class="kv"><span>Love language</span><span>Quality time</span></div>
+              <div class="kv"><span>Go-to order</span><span>Oat latte, extra hot</span></div>
+              <div class="kv"><span>Flowers</span><span>Peonies, not roses</span></div>
+              <div class="kv"><span>Favorite food</span><span>Sushi, Thai</span></div>
+              <div class="kv"><span>Dietary</span><span>No shellfish</span></div>
+            </div>
+            <p class="label" style="margin-top:16px">Never plan</p>
+            <div class="chips" style="margin-top:8px">
+              <span class="chip">Loud sports bars</span><span class="chip">Chain restaurants</span>
+            </div>
+            <div class="spacer"></div>
+            <p class="small muted" style="text-align:center">Updated by Maya 2 days ago</p>
+          </div>
+          <div class="tabbar"><span>Home</span><span class="on">Her</span><span>Plans</span><span>Profile</span></div>
+        </div></div>
+        <p class="caption"><b>Her cheat sheet</b>Her quiz answers turned into a quick reference. He can check it before he orders, buys flowers, or picks a place.</p>
+      </div>
+
+      <div class="shot">
+        <div class="phone"><div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Your plan · Sat, Oct 31</p>
+            <p class="h" style="font-size:22px">Omakase & a slow walk home</p>
+            <div class="stack" style="margin-top:16px">
+              <div class="stop"><span class="t">5:30</span><div><p class="n">Farmers market, Union Sq</p><p class="d">Pick up peonies on the way</p><p class="why">Her hint: misses the market</p></div></div>
+              <div class="stop"><span class="t">7:00</span><div><p class="n">Sushi Kaze, 5th Ave</p><p class="d">$$$ · 4.7 · ask for no shellfish</p><p class="why">Her hint: wants to try this place</p></div></div>
+              <div class="stop"><span class="t">9:00</span><div><p class="n">Book & Bean</p><p class="d">Quiet café, open till 11</p><p class="why">Cozy and quality time</p></div></div>
+            </div>
+            <p class="label" style="margin-top:16px">Before the date</p>
+            <div style="margin-top:4px">
+              <div class="check"><span class="box done"></span><span class="strike">Reserve Sushi Kaze for 2</span></div>
+              <div class="check"><span class="box"></span><span>Grab peonies (not roses)</span></div>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn rose">Send Maya a teaser</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>The date plan</b>The existing itinerary screen, plus a "why she'll love it" note on each stop that points back to her own answers or hints.</p>
+      </div>
+
+      <div class="shot">
+        <div class="phone"><div class="screen reveal">
+          <div class="island"></div>
+          <div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Better Boyfriend</p>
+            <p class="h" style="margin-top:40px;font-size:30px">Jordan planned something.</p>
+            <p class="sub" style="font-size:14px">Saturday, Oct 31 · 5:30 PM</p>
+            <div class="card stack" style="margin-top:24px">
+              <p class="small"><b>Dress:</b> Cozy, warm layers</p>
+              <p class="small"><b>Bring:</b> An appetite</p>
+              <p class="small"><b>Details:</b> A surprise</p>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn">Add to calendar</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>Her teaser</b>She gets the time, what to wear, and what to bring, but not where. This is the payoff that gets her telling friends about the app.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="notes">
+    <div>
+      <h3>Why it spreads</h3>
+      <p>She's the one who wants the app and he's the one who uses it. Each invite brings in a new user who already has a reason to open the app. When she tells a friend "he planned that with Better Boyfriend", it brings in another girlfriend.</p>
+    </div>
+    <div>
+      <h3>Reuses from Better Date</h3>
+      <ul>
+        <li>Quiz steps, vibes, budget, energy</li>
+        <li><code>/api/plan</code> + Google Places grounding</li>
+        <li>Plan timeline, pre-date checklist, calendar</li>
+        <li>Supabase auth (now needed for pairing)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>New to build</h3>
+      <ul>
+        <li>Pair two accounts through an invite link</li>
+        <li>Her profile and cheat sheet data</li>
+        <li>Hints feed shared between the two of them</li>
+        <li>Anniversary countdown and reminders</li>
+        <li>Teaser view that hides the venues</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

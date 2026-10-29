@@ -18,6 +18,7 @@ import './globals.css'
 
 const product = getProduct()
 const siteUrl = getSiteUrl()
+const textingFirst = product.id === 'date'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -80,10 +81,11 @@ export default function RootLayout({
           links={
             <>
               <NavbarLink href="/#how-it-works">How it works</NavbarLink>
+              {textingFirst && <NavbarLink href="/pricing">Pricing</NavbarLink>}
               <NavbarLink href="/about">About</NavbarLink>
               <AuthNavMobileLink />
-              <NavbarLink href="/quiz" className="sm:hidden">
-                {product.ctaLabel}
+              <NavbarLink href={textingFirst ? '/#text-us' : '/quiz'} className="sm:hidden">
+                {textingFirst ? 'Text us' : product.ctaLabel}
               </NavbarLink>
             </>
           }
@@ -98,7 +100,9 @@ export default function RootLayout({
               <PlainButtonLink href="/#how-it-works" className="max-sm:hidden lg:hidden">
                 How it works
               </PlainButtonLink>
-              <ButtonLink href="/quiz">{product.ctaLabel}</ButtonLink>
+              <ButtonLink href={textingFirst ? '/#text-us' : '/quiz'}>
+                {textingFirst ? 'Text us' : product.ctaLabel}
+              </ButtonLink>
             </>
           }
         />
@@ -110,15 +114,18 @@ export default function RootLayout({
           links={
             <>
               <FooterCategory title="Product">
-                <FooterLink href="/quiz">{product.ctaLabel}</FooterLink>
+                {textingFirst && <FooterLink href="/#text-us">Text us</FooterLink>}
+                <FooterLink href="/quiz">{textingFirst ? 'Take the quiz' : product.ctaLabel}</FooterLink>
                 <FooterLink href="/#how-it-works">How it works</FooterLink>
+                {textingFirst && <FooterLink href="/pricing">Pricing</FooterLink>}
               </FooterCategory>
               <FooterCategory title="Company">
                 <FooterLink href="/about">About</FooterLink>
-                <FooterLink href="/#who">Who it’s for</FooterLink>
+                {!textingFirst && <FooterLink href="/#who">Who it’s for</FooterLink>}
               </FooterCategory>
               <FooterCategory title="Legal">
                 <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+                {textingFirst && <FooterLink href="/sms-terms">SMS Terms</FooterLink>}
               </FooterCategory>
             </>
           }

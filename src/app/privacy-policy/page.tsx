@@ -42,6 +42,16 @@ export default function Page() {
           yourself from the account page. You can update or clear these defaults while signed in.
         </p>
         <p>
+          If you sign up to plan by text, we store your phone number, when and how you agreed to receive messages, and
+          the messages you exchange with us, so we can plan with you and send the reminders you asked for. Mobile
+          information is not shared with third parties or affiliates for marketing or promotional purposes. Reply STOP to
+          any message to stop texts; see our <Link href="/sms-terms">SMS Terms</Link>.
+        </p>
+        <p>
+          Plans you generate are saved so they can be opened from a link. Anyone with the link can view that plan, so
+          only share it with people you want to see it.
+        </p>
+        <p>
           We may also automatically collect limited technical or usage information when you use the Services. This may
           include information such as browser type, device or operating system details, IP address, and general usage
           data.

@@ -18,6 +18,8 @@ export const datePlanStopSchema = z.object({
   address: z.string().optional(),
   mapsUrl: z.string().optional(),
   rating: z.number().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
 })
 
 export const datePlanSchema = z.object({

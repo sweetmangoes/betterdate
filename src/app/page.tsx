@@ -6,13 +6,18 @@ import { HeartPulseIcon } from '@/components/icons/heart-pulse-icon'
 import { MapPinIcon } from '@/components/icons/map-pin-icon'
 import { SparklesIcon } from '@/components/icons/sparkles-icon'
 import { CallToActionSimpleCentered } from '@/components/sections/call-to-action-simple-centered'
+import { DateTextingLanding } from '@/components/sections/date-texting-landing'
 import { Feature, FeaturesThreeColumn } from '@/components/sections/features-three-column'
 import { HeroSimpleCentered } from '@/components/sections/hero-simple-centered'
 import { Section } from '@/components/elements/section'
+import { getDatesPlanned } from '@/lib/plans-db'
 import { getProduct } from '@/lib/product'
 import { defaultDescription } from '@/lib/site'
 
 const product = getProduct()
+
+/** Keep the dates-planned ticker close to live without hitting the database on every request. */
+export const revalidate = 30
 const landing = product.landing
 const namedFeature = landing.namedFeature
 const stepIcons = [<HeartPulseIcon key="vibe" />, <SparklesIcon key="plan" />, <MapPinIcon key="go" />]
@@ -27,7 +32,12 @@ export const metadata: Metadata = {
   },
 }
 
-export default function Page() {
+export default async function Page() {
+  if (product.id === 'date') {
+    const datesPlanned = await getDatesPlanned('date')
+    return <DateTextingLanding datesPlanned={datesPlanned} />
+  }
+
   return (
     <>
       <section className="relative overflow-hidden pt-10 pb-8 sm:pt-16">

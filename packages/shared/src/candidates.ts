@@ -7,6 +7,8 @@ export type PlanCandidate = {
   priceLevel?: string
   mapsUrl: string
   primaryType?: string
+  lat?: number
+  lng?: number
 }
 
 export function formatCandidateList(candidates: PlanCandidate[]): string {

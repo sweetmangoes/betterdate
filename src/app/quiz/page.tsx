@@ -166,11 +166,16 @@ export default function QuizPage() {
           body: JSON.stringify(parsed.data),
         })
         const body: unknown = await response.json()
-        const { plan } = parsePlanApiResponse(response.ok, body)
+        const { plan, planId, dateNumber } = parsePlanApiResponse(response.ok, body)
 
         sessionStorage.setItem(product.planStorageKey, JSON.stringify(plan))
         sessionStorage.setItem(product.quizStorageKey, JSON.stringify(parsed.data))
-        router.push('/plan')
+        if (dateNumber) {
+          sessionStorage.setItem(`${product.planStorageKey}:dateNumber`, String(dateNumber))
+        } else {
+          sessionStorage.removeItem(`${product.planStorageKey}:dateNumber`)
+        }
+        router.push(planId ? `/p/${planId}` : '/plan')
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Network error. Check your connection and try again.')
       }

@@ -7,6 +7,8 @@ Living list of product ideas beyond the current MVP (quiz → AI plan, no accoun
 
 Status key: `shipped` · `next` · `planned` · `later`
 
+For the big picture across all three products (Better Date, the relationship app, Better Hang), see [`PRODUCT.md`](./PRODUCT.md).
+
 ---
 
 ## Shipped (MVP)
@@ -296,7 +298,8 @@ Status key: `shipped` · `next` · `planned` · `later`
 | Apple Calendar invitations | `later` | EventKit invitee flow |
 | Find free time (read calendars) | `planned` | EventKit (iOS) + Google freeBusy (web); suggest mutual open slots before planning |
 | **Android / Play Store** | `later` · phase 1.5 | Same Expo app; start after Week 4 iOS MVP |
-| Couple share link | `later` | One plan, two people; edit vibes together |
+| Couple share link | moved | Now part of the relationship app (pairing + invite link); see sibling product below |
+| “Make it official” | `planned` | Move a Better Date user into the relationship app (and back on unpair); see sibling product below |
 | “Plan another” with tweak | `later` | Reuse last quiz answers; regenerate |
 | Weather-aware backups | `later` | Pull forecast for date night; prefer indoor if rain |
 | Budget estimate from menus | `later` | Rough; don’t overclaim accuracy |
@@ -389,6 +392,58 @@ Same repo and Places → LLM itinerary engine as Better Date. A second Vercel pr
 | Product config | `@betterdate/shared` `getProduct()` — brand, quiz, prompts, Places queries, storage keys |
 | Friends quiz | Pair (same four meeting modes) or group (3–8 people; neighborhood or near-me only) |
 | Local | `npm run dev:friends` |
+| Auth + saved preferences | `shipped` — Supabase login, `/account`, `preference_profiles` table |
 | iOS | Later — keep Better Date on TestFlight first; then an EAS profile / bundle id |
 
+**Next for Better Hang (`planned`):**
+- Your people (see below)
+- Book time to catch up: mutual free time across calendars (reuses 3b), then plan into the slot
+
+### Your people — `planned`
+
+**Why:** Hangouts happen with the people you choose to prioritize. Let signed-in users pick who they want to see more, and have Better Hang keep them on track.
+
+| Phase | What | How |
+|-------|------|-----|
+| A | Private list | Add a friend by name, plus optional area and things to avoid. No account needed for the friend. |
+| B | “How often” goal + nudges | Each person gets a goal (every week, 2 weeks, month, or few months). Past-due people show at the top: “It’s been 6 weeks since you saw Alex.” |
+| C | Plan with one tap + hang log | “Plan a hang with Alex” prefills the quiz (pair mode, meet in the middle, their area and dislikes). Generating the plan logs the hang and resets the goal. |
+| D | Group from your list | Pick 3+ people and it becomes a group plan (uses the existing group quiz). |
+| E | Invite to connect | Invite someone on your list to join Better Hang; once connected, use their saved preferences instead of what you typed. |
+
+**Needs:** Supabase tables for people (`user_id`, name, area, avoid, goal) and hangs (`user_id`, person ids, date, plan). Row-level security like `preference_profiles`. Push reminders for nudges on iOS later; on web, show them on the home and account pages.
+
+**Touchpoints:** `supabase/schema.sql`, `packages/shared` (person + hang schemas), `/account`, new `/api/me/people` + `/api/me/hangs`, quiz prefill (same pattern as `applyPreferenceProfile`), plan page (log the hang)
+
 Do **not** add Friends as an audience inside Better Date, and do **not** fork the repo.
+
+---
+
+## Sibling product: Better Boyfriend / Better Romance (name undecided) — `planned`
+
+Third `ProductConfig` on the same engine. AI planner for couples, focused on helping him plan better dates from her preferences and their shared history. Mockup: `mockups/better-boyfriend.html`.
+
+| What | Notes |
+|------|--------|
+| Her side (web, no download) | Preference profile (vibes, food, coffee order, flowers, dietary, love language, “never again”), hints, invite link to him, date teaser |
+| His side (iOS) | Home with anniversary countdown + new hints, her cheat sheet, plans with “why she’ll love it” per stop, pre-date checklist |
+| History | Always on: anniversaries, milestones, past dates, hints used |
+| Pairing | Required accounts; she invites, he joins already paired |
+| New to build | Pairing + invite links, partner profile data, hints feed, milestones/countdown, teaser view that hides venues |
+| Reuses | Quiz, `/api/plan`, Places grounding, plan timeline, checklist (2), calendar (3) |
+
+**Moving between products (both directions):**
+- Better Date → relationship app (“Make it official”): pair with a partner; saved plans with that person become past dates; their first date becomes the first milestone.
+- Relationship app → Better Date (unpair): the account goes back to Better Date and keeps its own preferences. **Open:** what happens to shared history (delete for both, keep a private copy each, or archive).
+
+**Couples audience in Better Date:** stays for now. Once the relationship app ships, Better Date’s “couple” option should point people to it.
+
+**Schema notes:** `supabase/schema.sql` limits `product` to `('date', 'friends')`, so that check needs the new product id. Build shared history tables (plans, people, events) once, with a `product` column.
+
+---
+
+## Housekeeping
+
+| Item | Notes |
+|------|--------|
+| Pricing page | `src/app/pricing/page.tsx` is still the “Oatmeal” template, including the joke FAQs. Rewrite before linking to it. |

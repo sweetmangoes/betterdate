@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Texting + screens — user journeys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --m50: oklch(98.2% 0.008 75);
+    --m100: oklch(96.4% 0.012 70);
+    --m200: oklch(91.5% 0.014 65);
+    --m300: oklch(84% 0.016 55);
+    --m400: oklch(68% 0.02 45);
+    --m500: oklch(52% 0.022 40);
+    --m700: oklch(34% 0.018 35);
+    --m950: oklch(15% 0.01 28);
+    --r50: oklch(97% 0.015 15);
+    --r100: oklch(94% 0.03 15);
+    --r200: oklch(88% 0.05 15);
+    --r300: oklch(78% 0.08 15);
+    --r500: oklch(58% 0.14 15);
+    --r600: oklch(50% 0.14 15);
+    --r700: oklch(42% 0.12 15);
+    --me: oklch(60% 0.17 255);
+    --display: 'Fraunces', Georgia, serif;
+    --sans: 'Figtree', system-ui, sans-serif;
+  }
+  .hang {
+    --r50: oklch(97% 0.015 210);
+    --r100: oklch(94% 0.03 210);
+    --r200: oklch(88% 0.05 210);
+    --r300: oklch(78% 0.08 210);
+    --r500: oklch(58% 0.12 210);
+    --r600: oklch(50% 0.12 210);
+    --r700: oklch(42% 0.11 210);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); color: var(--m950); background: var(--m100); -webkit-font-smoothing: antialiased; padding: 56px 32px 80px; }
+  .page { max-width: 1260px; margin: 0 auto; }
+
+  header.intro { max-width: 780px; margin: 0 auto 24px; text-align: center; }
+  .eyebrow { font-family: var(--display); color: var(--r700); font-size: 24px; }
+  h1 { font-family: var(--display); font-weight: 400; font-size: 48px; line-height: 1.05; letter-spacing: -0.02em; margin-top: 10px; }
+  .lede { margin-top: 16px; color: var(--m700); font-size: 17px; line-height: 1.6; }
+  .legend { display: flex; gap: 22px; justify-content: center; margin-top: 22px; font-size: 13px; color: var(--m700); }
+  .legend div { display: flex; align-items: center; gap: 8px; }
+
+  .journey { margin-top: 64px; }
+  .journey-head { display: flex; align-items: baseline; gap: 14px; padding-bottom: 12px; margin-bottom: 24px; border-bottom: 1px solid var(--m200); }
+  .journey-head h2 { font-family: var(--display); font-weight: 400; font-size: 30px; letter-spacing: -0.01em; color: var(--r700); }
+  .journey-head p { color: var(--m500); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 285px); gap: 40px 33px; justify-content: space-between; }
+
+  .step { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .num { font-family: var(--display); font-size: 20px; color: var(--r700); width: 18px; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .tag.text { background: var(--m950); color: var(--m50); }
+  .tag.scr { background: var(--r100); color: var(--r700); border: 1px solid var(--r200); }
+  .whose { font-size: 12px; color: var(--m500); font-weight: 600; }
+  .caption { margin-top: 14px; font-size: 13px; line-height: 1.5; color: var(--m700); }
+  .caption b { display: block; color: var(--m950); font-size: 14px; margin-bottom: 2px; }
+
+  /* Phone shell */
+  .phone { width: 285px; height: 620px; border-radius: 42px; background: var(--m950); padding: 9px; position: relative; }
+  .screen { width: 100%; height: 100%; border-radius: 34px; overflow: hidden; background: var(--m50); display: flex; flex-direction: column; position: relative; }
+  .island { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 84px; height: 23px; background: var(--m950); border-radius: 20px; z-index: 2; }
+  .status { height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 0 22px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .body { flex: 1; padding: 6px 16px 16px; display: flex; flex-direction: column; overflow: hidden; }
+  .brand { font-family: var(--display); font-size: 14px; color: var(--r700); }
+  .h { font-family: var(--display); font-size: 23px; line-height: 1.12; letter-spacing: -0.015em; margin-top: 8px; }
+  .sub { font-size: 12.5px; color: var(--m500); line-height: 1.5; margin-top: 6px; }
+  .btn { display: block; text-align: center; background: var(--m950); color: var(--m50); font-weight: 600; font-size: 13.5px; padding: 12px; border-radius: 999px; }
+  .btn.rose { background: var(--r600); }
+  .btn.ghost { background: transparent; color: var(--m950); border: 1px solid var(--m300); }
+  .spacer { flex: 1; }
+  .label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--m500); }
+  .card { border: 1px solid var(--m200); border-radius: 16px; padding: 11px 13px; background: oklch(100% 0 0); }
+  .card.rose { background: var(--r50); border-color: var(--r200); }
+  .small { font-size: 12px; }
+  .muted { color: var(--m500); }
+  .kv { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 7px 0; border-bottom: 1px solid var(--m200); }
+  .kv:last-child { border-bottom: 0; }
+  .kv span:first-child { color: var(--m500); }
+  .kv span:last-child { font-weight: 600; text-align: right; }
+  .stop { display: grid; grid-template-columns: 40px 1fr; gap: 8px; }
+  .stop + .stop { margin-top: 10px; }
+  .stop .t { font-size: 11.5px; font-weight: 700; color: var(--m500); padding-top: 2px; }
+  .stop .n { font-weight: 600; font-size: 13.5px; }
+  .stop .d { font-size: 11.5px; color: var(--m500); margin-top: 1px; }
+  .stop .why { font-size: 11.5px; color: var(--r700); margin-top: 2px; }
+  .map { height: 112px; border-radius: 14px; background: var(--m200); overflow: hidden; margin-top: 12px; flex-shrink: 0; }
+  .map svg { width: 100%; height: 100%; display: block; }
+
+  /* Messages */
+  .msgs { background: oklch(100% 0 0); }
+  .thread-top { text-align: center; padding: 2px 0 10px; border-bottom: 1px solid var(--m200); flex-shrink: 0; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; margin: 0 auto 3px; display: grid; place-items: center; font-family: var(--display); font-size: 17px; background: var(--r100); color: var(--r700); }
+  .avatar.person { background: var(--m200); color: var(--m700); font-family: var(--sans); font-weight: 700; font-size: 15px; }
+  .thread-top p { font-size: 11.5px; font-weight: 600; }
+  .bubbles { padding: 10px 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; flex: 1; overflow: hidden; }
+  .bub { max-width: 80%; font-size: 13px; line-height: 1.38; padding: 8px 12px; border-radius: 17px; }
+  .bub.ai { align-self: flex-start; background: var(--m200); }
+  .bub.me { align-self: flex-end; background: var(--me); color: white; }
+  .stamp { text-align: center; font-size: 10.5px; color: var(--m400); font-weight: 600; margin: 6px 0 2px; }
+  .link { width: 80%; border-radius: 17px; overflow: hidden; border: 1px solid var(--m200); flex-shrink: 0; }
+  .link.ai { align-self: flex-start; }
+  .link.me { align-self: flex-end; }
+  .link .art { height: 52px; background: var(--r100); display: grid; place-items: center; font-family: var(--display); font-size: 17px; color: var(--r700); }
+  .link .meta { padding: 7px 11px; background: var(--m100); font-size: 11.5px; line-height: 1.35; color: var(--m500); }
+  .link .meta b { display: block; font-size: 12.5px; color: var(--m950); }
+  .compose { margin: 0 12px 14px; border: 1px solid var(--m200); border-radius: 999px; padding: 8px 14px; font-size: 12px; color: var(--m400); flex-shrink: 0; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-size: 11.5px; font-weight: 500; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--m300); background: oklch(100% 0 0); }
+  .person-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--m200); }
+  .person-row:last-child { border-bottom: 0; }
+  .pa { width: 34px; height: 34px; border-radius: 50%; background: var(--m200); display: grid; place-items: center; font-weight: 700; font-size: 13px; color: var(--m700); flex-shrink: 0; }
+  .person-row .info { flex: 1; font-size: 13px; }
+  .person-row .info span { display: block; font-size: 11.5px; color: var(--m500); }
+  .due { font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--r100); color: var(--r700); }
+  .ok { font-size: 10.5px; font-weight: 600; color: var(--m500); }
+  .reveal { background: var(--r700); color: var(--r50); }
+  .reveal .brand, .reveal .sub { color: var(--r200); }
+  .reveal .card { background: oklch(100% 0 0 / 0.08); border-color: oklch(100% 0 0 / 0.18); color: var(--r50); }
+  .reveal .btn { background: var(--r50); color: var(--r700); }
+
+  /* Summary panel */
+  .summary { grid-column: span 2; align-self: start; border: 1px solid var(--m200); border-radius: 24px; padding: 26px 28px; background: var(--m50); }
+  .summary h3 { font-family: var(--display); font-weight: 400; font-size: 22px; margin-bottom: 14px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .split ul { list-style: none; }
+  .split li { font-size: 13.5px; line-height: 1.45; color: var(--m700); padding: 7px 0; border-bottom: 1px solid var(--m200); }
+  .split li:last-child { border-bottom: 0; }
+  .summary .note { margin-top: 18px; font-size: 13.5px; line-height: 1.55; color: var(--m700); padding-top: 14px; border-top: 1px solid var(--m200); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="intro">
+    <p class="eyebrow">Better Date family</p>
+    <h1>Texting for talking. Screens for looking.</h1>
+    <p class="lede">The AI texts you to ask questions, nudge you, and confirm plans. Anything you need to see, compare, or set up opens as a screen from a link in the text. Three journeys, one pattern.</p>
+    <div class="legend">
+      <div><span class="tag text">Text</span> SMS or WhatsApp conversation</div>
+      <div><span class="tag scr">Screen</span> Web page (iOS app later)</div>
+    </div>
+  </header>
+
+  <!-- ============ BETTER DATE ============ -->
+  <section class="journey" id="date">
+    <div class="journey-head"><h2>Better Date</h2><p>Planning a first date, from search to "want to plan date two?"</p></div>
+    <div class="grid">
+
+      <div>
+        <div class="step"><span class="num">1</span><span class="tag scr">Screen</span><span class="whose">Website</span></div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Better Date</p>
+            <p class="h" style="font-size:27px;margin-top:26px">Intentional dates, planned for where you are.</p>
+            <p class="sub" style="font-size:13.5px">Tell us the vibe. We'll plan a night with real places nearby.</p>
+            <div class="spacer"></div>
+            <span class="btn rose">Take the quiz</span>
+            <span class="btn ghost" style="margin-top:10px">Text us instead</span>
+            <p class="small muted" style="text-align:center;margin-top:10px">Text (613) 555-0142. Reply STOP anytime.</p>
+          </div>
+        </div></div>
+        <p class="caption"><b>Finds you</b>They arrive from a search like "first date ideas Ottawa." Tapping the quiz keeps today's flow. Texting starts a conversation instead.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">2</span><span class="tag text">Text</span><span class="whose">User's phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Date</p></div>
+          <div class="bubbles">
+            <div class="bub me">hey, first date friday, help 😅</div>
+            <div class="bub ai">Love it. Where are you each coming from?</div>
+            <div class="bub me">I'm in Orleans, she's in the Glebe</div>
+            <div class="bub ai">Halfway it is. Cozy and low-key, or something more fun?</div>
+            <div class="bub me">cozy. she loves sushi</div>
+            <div class="bub ai">Got it. Here's your Friday plan:</div>
+            <div class="link ai"><div class="art">Better Date</div><div class="meta"><b>Sushi & a slow walk, Friday 7 PM</b>3 stops near Elgin St</div></div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>Gets to know you</b>The quiz questions, asked as a chat: who, where, vibe, budget. It skips anything it already knows from earlier texts.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">3</span><span class="tag scr">Screen</span><span class="whose">Opened from the link</span></div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Your date plan · Fri</p>
+            <p class="h" style="font-size:21px">Sushi & a slow walk</p>
+            <div class="map"><svg viewBox="0 0 250 112" preserveAspectRatio="none">
+              <path d="M0 70 L250 50" stroke="oklch(100% 0 0)" stroke-width="8"/><path d="M90 0 L120 112" stroke="oklch(100% 0 0)" stroke-width="6"/><path d="M190 0 L175 112" stroke="oklch(100% 0 0)" stroke-width="5"/>
+              <path d="M60 40 Q110 30 140 62 T210 80" fill="none" stroke="var(--r600)" stroke-width="2.5" stroke-dasharray="5 4"/>
+              <circle cx="60" cy="40" r="7" fill="var(--r600)"/><circle cx="140" cy="62" r="7" fill="var(--r600)"/><circle cx="210" cy="80" r="7" fill="var(--r600)"/>
+            </svg></div>
+            <div style="margin-top:14px">
+              <div class="stop"><span class="t">7:00</span><div><p class="n">Sushi Kaze</p><p class="d">$$ · 4.7 · Elgin St</p></div></div>
+              <div class="stop"><span class="t">8:30</span><div><p class="n">Walk along the canal</p><p class="d">10 min, lit path</p></div></div>
+              <div class="stop"><span class="t">9:15</span><div><p class="n">Little Victories Coffee</p><p class="d">Open till 11</p></div></div>
+            </div>
+            <p class="label" style="margin-top:14px">Conversation starters</p>
+            <p class="small" style="margin-top:6px;line-height:1.45">"What's a trip you're still thinking about?"</p>
+            <div class="spacer"></div>
+            <span class="btn">Add to calendar</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>The plan</b>The plan page you already have: stops, map, conversation starters, and a backup idea. It's easier to look at than to read in a text.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">4</span><span class="tag text">Text</span><span class="whose">User's phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Date</p></div>
+          <div class="bubbles">
+            <div class="bub ai">Sushi Kaze fills up on Fridays. Want me to remind you to book it tomorrow?</div>
+            <div class="bub me">yes pls</div>
+            <div class="stamp">Wed 10:00 AM</div>
+            <div class="bub ai">Reminder: book Sushi Kaze for 2 at 7. Here's the link →</div>
+            <div class="bub me">booked ✅</div>
+            <div class="stamp">Fri 4:30 PM</div>
+            <div class="bub ai">Tonight's the night. Meet at Sushi Kaze at 7. If it rains, swap the walk for the National Arts Centre café.</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>Follow-through</b>The checklist and reminders, sent by text. No app to open. It never says a table is booked unless they confirm it.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">5</span><span class="tag text">Text</span><span class="whose">User's phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Date</p></div>
+          <div class="bubbles">
+            <div class="stamp">Sat 11:00 AM</div>
+            <div class="bub ai">How'd last night go?</div>
+            <div class="bub me">really good. we closed down the coffee place</div>
+            <div class="bub ai">Love that. Want to plan date two? She seemed into the canal, maybe something outdoors.</div>
+            <div class="stamp">5 weeks later</div>
+            <div class="bub ai">That's your 4th date with Sam. Getting serious? I can help you two keep it going.</div>
+            <div class="link ai"><div class="art">Make it official</div><div class="meta"><b>Move to the relationship app</b>Your dates with Sam come with you</div></div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>After the date</b>A check-in, then date two. Once it gets serious, the "Make it official" link moves them into the relationship app with their history.</p>
+      </div>
+
+      <div class="summary">
+        <h3>Where Better Date switches between text and screens</h3>
+        <div class="split">
+          <ul>
+            <li><b>Text:</b> learning preferences</li>
+            <li><b>Text:</b> booking reminders and day-of reminder</li>
+            <li><b>Text:</b> "how'd it go?" and date two</li>
+            <li><b>Text:</b> invite to make it official</li>
+          </ul>
+          <ul>
+            <li><b>Screen:</b> landing page and quiz (for search traffic)</li>
+            <li><b>Screen:</b> the plan with map and starters</li>
+            <li><b>Screen:</b> calendar, payment, sign-up</li>
+          </ul>
+        </div>
+        <p class="note">Free plan: one plan a week, nothing saved after the date. Pro: unlimited plans, and the AI remembers past dates ("last time you did sushi, try something new").</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ RELATIONSHIP APP ============ -->
+  <section class="journey" id="romance">
+    <div class="journey-head"><h2>Better Boyfriend / Better Romance</h2><p>She sets it up, he plans, she gets surprised</p></div>
+    <div class="grid">
+
+      <div>
+        <div class="step"><span class="num">1</span><span class="tag text">Text</span><span class="whose">Her phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Boyfriend</p></div>
+          <div class="bubbles">
+            <div class="bub me">my bf never plans anything lol</div>
+            <div class="bub ai">I can fix that. Tell me about you. Go-to coffee order?</div>
+            <div class="bub me">oat latte extra hot</div>
+            <div class="bub ai">Flowers: yes or no? Any favorites?</div>
+            <div class="bub me">peonies. never roses</div>
+            <div class="bub ai">Noted. A few more and I'll make his cheat sheet. Or finish faster here:</div>
+            <div class="link ai"><div class="art">Your profile</div><div class="meta"><b>2-minute quiz</b>Vibes, food, love language</div></div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>She starts</b>She can answer by text or tap into the quiz. Both fill in the same profile. She chooses whichever is faster for her.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">2</span><span class="tag text">Text</span><span class="whose">Her phone, then his</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Boyfriend</p></div>
+          <div class="bubbles">
+            <div class="bub ai">Your profile's ready. Send Jordan this link. I'll only text him once he taps it.</div>
+            <div class="link ai"><div class="art">Better Boyfriend</div><div class="meta"><b>Maya made you a cheat sheet</b>Tap to start</div></div>
+            <div class="stamp">On Jordan's phone</div>
+            <div class="bub ai">Hey Jordan 👋 Maya set this up for you. I know what she likes, and I'll help you plan dates she'll love.</div>
+            <div class="bub ai">Here's her cheat sheet. Reply STOP anytime.</div>
+            <div class="bub me">ok this is kind of genius</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>She invites him</b>She sends the link herself, so he's never texted cold. Tapping it is his opt-in. Then the AI says hi.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">3</span><span class="tag scr">Screen</span><span class="whose">His phone</span></div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Maya's cheat sheet</p>
+            <p class="h">What she loves</p>
+            <div class="card" style="margin-top:12px;padding-top:3px;padding-bottom:3px">
+              <div class="kv"><span>Vibe</span><span>Cozy, foodie</span></div>
+              <div class="kv"><span>Love language</span><span>Quality time</span></div>
+              <div class="kv"><span>Coffee</span><span>Oat latte, extra hot</span></div>
+              <div class="kv"><span>Flowers</span><span>Peonies, never roses</span></div>
+              <div class="kv"><span>Food</span><span>Sushi, Thai</span></div>
+              <div class="kv"><span>Dietary</span><span>No shellfish</span></div>
+            </div>
+            <p class="label" style="margin-top:14px">Never plan</p>
+            <div class="chips" style="margin-top:7px"><span class="chip">Loud sports bars</span><span class="chip">Chain restaurants</span></div>
+            <p class="label" style="margin-top:14px">Coming up</p>
+            <div class="card rose" style="margin-top:7px"><p class="small"><b>6-month anniversary</b> · Nov 7</p></div>
+            <div class="spacer"></div>
+            <p class="small muted" style="text-align:center">Save to home screen</p>
+          </div>
+        </div></div>
+        <p class="caption"><b>Her cheat sheet</b>A screen he comes back to before buying flowers or ordering for her. This is reference, so it's better as a page than a text.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">4</span><span class="tag text">Text</span><span class="whose">His phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Boyfriend</p></div>
+          <div class="bubbles">
+            <div class="bub ai">New hint from Maya: "that omakase place on 5th looks so good" 👀</div>
+            <div class="stamp">Oct 26</div>
+            <div class="bub ai">Your 6-month is in 12 days. Want me to plan something?</div>
+            <div class="bub me">yes. something chill</div>
+            <div class="bub ai">Using her omakase hint. Dinner then a quiet café? Sat Nov 7 at 6?</div>
+            <div class="bub me">perfect</div>
+            <div class="link ai"><div class="art">Your plan</div><div class="meta"><b>Omakase & a quiet café</b>Sat Nov 7 · 3 stops</div></div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>Hints and nudges</b>Her hints show up as texts. The anniversary nudge comes first. He plans in two replies, and the AI fills in the rest from her profile.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">5</span><span class="tag scr">Screen</span><span class="whose">His phone</span></div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Your plan · Sat, Nov 7</p>
+            <p class="h" style="font-size:21px">Omakase & a quiet café</p>
+            <div style="margin-top:14px">
+              <div class="stop"><span class="t">5:30</span><div><p class="n">Florist on Bank St</p><p class="d">Peonies, about $35</p><p class="why">She said: peonies, never roses</p></div></div>
+              <div class="stop"><span class="t">6:00</span><div><p class="n">Sushi Kaze, 5th Ave</p><p class="d">$$$ · tell them no shellfish</p><p class="why">Her hint from Oct 20</p></div></div>
+              <div class="stop"><span class="t">8:15</span><div><p class="n">Book & Bean</p><p class="d">Quiet café, open till 11</p><p class="why">Quality time, cozy</p></div></div>
+            </div>
+            <p class="label" style="margin-top:14px">Before the date</p>
+            <div class="card" style="margin-top:7px">
+              <p class="small">☐ Book Sushi Kaze for 2</p>
+              <p class="small" style="margin-top:6px">☐ Pick up peonies</p>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn rose">Send Maya a teaser</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>The plan</b>Each stop shows why she'll love it, taken from her own answers and hints. The checklist items also come back as text reminders.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">6</span><span class="tag text">Text</span><span class="whose">Her phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Boyfriend</p></div>
+          <div class="bubbles">
+            <div class="bub ai">Jordan planned something 💌</div>
+            <div class="link ai"><div class="art">Sat · 5:30 PM</div><div class="meta"><b>Dress cozy. Bring an appetite.</b>Where? That's a surprise.</div></div>
+            <div class="bub me">STOP he did not 😭</div>
+            <div class="stamp">Sun 11:00 AM</div>
+            <div class="bub ai">How was last night?</div>
+            <div class="bub me">best date we've had honestly</div>
+            <div class="bub ai">Saved to your story: 6 months ❤️ Next up, his birthday in Jan.</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>Her teaser, then after</b>She gets a teaser with no venues. The day after, both get a check-in. The date is saved, and the next milestone starts counting down.</p>
+      </div>
+
+      <div class="summary">
+        <h3>Where the relationship app switches</h3>
+        <div class="split">
+          <ul>
+            <li><b>Text:</b> her profile (or the quiz), and the invite link</li>
+            <li><b>Text:</b> hints, as they happen</li>
+            <li><b>Text:</b> anniversary nudges and planning</li>
+            <li><b>Text:</b> her teaser and the check-in after</li>
+          </ul>
+          <ul>
+            <li><b>Screen:</b> her cheat sheet (saved to his home screen)</li>
+            <li><b>Screen:</b> the plan with "why she'll love it"</li>
+            <li><b>Screen:</b> their story: past dates and milestones</li>
+          </ul>
+        </div>
+        <p class="note">This product fits texting best. Neither of them downloads anything, and the invite link she sends is what brings him in.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ BETTER HANG ============ -->
+  <section class="journey hang" id="hang">
+    <div class="journey-head"><h2>Better Hang</h2><p>Seeing the people you care about, before it's been three months</p></div>
+    <div class="grid">
+
+      <div>
+        <div class="step"><span class="num">1</span><span class="tag scr">Screen</span><span class="whose">Your phone</span></div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Better Hang</p>
+            <p class="h">Your people</p>
+            <p class="sub">Who do you want to see more?</p>
+            <div class="card" style="margin-top:14px;padding-top:2px;padding-bottom:2px">
+              <div class="person-row"><span class="pa">A</span><div class="info">Alex<span>Every 2 weeks · last: 3 wks ago</span></div><span class="due">Due</span></div>
+              <div class="person-row"><span class="pa">P</span><div class="info">Priya<span>Every month · last: 5 wks ago</span></div><span class="due">Due</span></div>
+              <div class="person-row"><span class="pa">M</span><div class="info">Marcus<span>Every month · last: 1 wk ago</span></div><span class="ok">On track</span></div>
+              <div class="person-row"><span class="pa">D</span><div class="info">Dana<span>Every few months</span></div><span class="ok">On track</span></div>
+            </div>
+            <div class="spacer"></div>
+            <span class="btn ghost">+ Add someone</span>
+            <p class="small muted" style="text-align:center;margin-top:10px">Or text: "add Sam, every month"</p>
+          </div>
+        </div></div>
+        <p class="caption"><b>Your people</b>Pick who you want to see more and how often. It's easier to manage as a list, but you can also add people by text.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">2</span><span class="tag text">Text</span><span class="whose">Your phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Hang</p></div>
+          <div class="bubbles">
+            <div class="stamp">Wed 12:10 PM</div>
+            <div class="bub ai">It's been 3 weeks since you saw Alex. Want me to set something up this weekend?</div>
+            <div class="bub me">yes!! saturday ideally</div>
+            <div class="bub ai">On it. I'll check with Alex and come back with a time and a plan halfway between you.</div>
+            <div class="bub me">🙏</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>The nudge</b>Sent when someone passes their "how often" goal. One reply is enough to start planning.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">3</span><span class="tag text">Text</span><span class="whose">Alex's phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Hang</p></div>
+          <div class="bubbles">
+            <div class="bub ai">Hey Alex, Jordan wants to hang this Saturday. Free in the afternoon?</div>
+            <div class="bub me">yeah after 2</div>
+            <div class="bub ai">Nice. Anything you're craving, or avoiding?</div>
+            <div class="bub me">no bars, I'm doing dry november lol</div>
+            <div class="bub ai">Got it, no bars. Plan coming shortly.</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>Bringing Alex in</b>Alex already joined through Jordan's link earlier. If he hadn't, Jordan would get a link to send him instead, so nobody is texted cold.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">4</span><span class="tag text">Text</span><span class="whose">Both phones</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Hang</p></div>
+          <div class="bubbles">
+            <div class="bub ai">Alex is in for Saturday 2–5 🎉 No bars (dry November). Meeting in the middle:</div>
+            <div class="link ai"><div class="art">Your hang</div><div class="meta"><b>Board games & dumplings, Sat 2 PM</b>Halfway: 18 min for both of you</div></div>
+            <div class="bub ai">Added to both your calendars.</div>
+            <div class="bub me">legend</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>The plan</b>Both get the same link. If calendars are connected, the invite is already there. Otherwise there's an "add to calendar" button.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">5</span><span class="tag scr">Screen</span><span class="whose">Opened from the link</span></div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="body">
+            <p class="brand">Your hang · Sat</p>
+            <p class="h" style="font-size:21px">Board games & dumplings</p>
+            <div class="map"><svg viewBox="0 0 250 112" preserveAspectRatio="none">
+              <path d="M0 60 L250 70" stroke="oklch(100% 0 0)" stroke-width="7"/><path d="M125 0 L118 112" stroke="oklch(100% 0 0)" stroke-width="6"/>
+              <path d="M22 24 L125 62 L230 92" fill="none" stroke="var(--r600)" stroke-width="2" stroke-dasharray="4 4"/>
+              <circle cx="22" cy="24" r="6" fill="var(--m700)"/><circle cx="230" cy="92" r="6" fill="var(--m700)"/>
+              <circle cx="125" cy="62" r="9" fill="var(--r600)"/>
+            </svg></div>
+            <p class="small muted" style="margin-top:6px">Jordan 18 min · Alex 18 min</p>
+            <div style="margin-top:12px">
+              <div class="stop"><span class="t">2:00</span><div><p class="n">Snakes & Lattes</p><p class="d">Board game café · book a table</p></div></div>
+              <div class="stop"><span class="t">4:00</span><div><p class="n">Dumpling House</p><p class="d">$ · 2 min walk</p></div></div>
+            </div>
+            <p class="label" style="margin-top:12px">Backup</p>
+            <p class="small" style="margin-top:5px">Packed? Try the bookstore café next door.</p>
+            <div class="spacer"></div>
+            <span class="btn rose">Add to calendar</span>
+          </div>
+        </div></div>
+        <p class="caption"><b>The hang plan</b>The existing hangout plan page, with meet-in-the-middle shown on the map so both of you can see it's fair.</p>
+      </div>
+
+      <div>
+        <div class="step"><span class="num">6</span><span class="tag text">Text</span><span class="whose">Your phone</span></div>
+        <div class="phone"><div class="screen msgs">
+          <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+          <div class="thread-top"><div class="avatar">B</div><p>Better Hang</p></div>
+          <div class="bubbles">
+            <div class="stamp">Sun 10:30 AM</div>
+            <div class="bub ai">How was yesterday with Alex?</div>
+            <div class="bub me">so fun, he destroyed me at catan</div>
+            <div class="bub ai">Ha. Logged it. I'll check in again in 2 weeks.</div>
+            <div class="bub ai">Also, Priya's been 5 weeks. Want me to reach out?</div>
+            <div class="bub me">yes next week</div>
+          </div>
+          <div class="compose">Text message</div>
+        </div></div>
+        <p class="caption"><b>After</b>The hang is logged, Alex's clock resets, and the next person who's due gets suggested.</p>
+      </div>
+
+      <div class="summary">
+        <h3>Where Better Hang switches</h3>
+        <div class="split">
+          <ul>
+            <li><b>Text:</b> nudges when someone's due</li>
+            <li><b>Text:</b> asking the friend if they're free</li>
+            <li><b>Text:</b> sending the plan and calendar invite</li>
+            <li><b>Text:</b> the check-in after, and who's next</li>
+          </ul>
+          <ul>
+            <li><b>Screen:</b> your people list and goals</li>
+            <li><b>Screen:</b> the hang plan with the halfway map</li>
+            <li><b>Screen:</b> connecting your calendar (once)</li>
+          </ul>
+        </div>
+        <p class="note">Group hangs work the same way. The AI asks everyone, finds a time most people can make, then sends one plan to the group.</p>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+<script>
+  // Open with #date, #romance, or #hang to show a single journey (used for PNG exports).
+  const only = location.hash.slice(1)
+  if (only) {
+    document.querySelector('header.intro').style.display = 'none'
+    document.querySelectorAll('.journey').forEach((el) => { if (el.id !== only) el.style.display = 'none' })
+    document.body.style.paddingTop = '8px'
+  }
+</script>
+</body>
+</html>

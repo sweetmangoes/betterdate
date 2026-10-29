@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Better Date website — texting version mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --m50: oklch(98.2% 0.008 75);
+    --m100: oklch(96.4% 0.012 70);
+    --m200: oklch(91.5% 0.014 65);
+    --m300: oklch(84% 0.016 55);
+    --m400: oklch(68% 0.02 45);
+    --m500: oklch(52% 0.022 40);
+    --m700: oklch(34% 0.018 35);
+    --m950: oklch(15% 0.01 28);
+    --r50: oklch(97% 0.015 15);
+    --r100: oklch(94% 0.03 15);
+    --r200: oklch(88% 0.05 15);
+    --r500: oklch(58% 0.14 15);
+    --r600: oklch(50% 0.14 15);
+    --r700: oklch(42% 0.12 15);
+    --me: oklch(60% 0.17 255);
+    --display: 'Fraunces', Georgia, serif;
+    --sans: 'Figtree', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); color: var(--m950); background: var(--m200); -webkit-font-smoothing: antialiased; padding: 48px 32px 72px; }
+  .page { max-width: 1240px; margin: 0 auto; }
+
+  .frame-label { display: flex; align-items: baseline; gap: 12px; margin: 56px 0 14px; }
+  .frame-label:first-child { margin-top: 0; }
+  .frame-label .n { font-family: var(--display); font-size: 26px; color: var(--r700); }
+  .frame-label h2 { font-family: var(--display); font-weight: 400; font-size: 24px; }
+  .frame-label p { color: var(--m500); font-size: 14px; }
+
+  /* Browser chrome */
+  .browser { border-radius: 14px; overflow: hidden; border: 1px solid var(--m300); background: var(--m100); }
+  .chrome { height: 44px; background: var(--m50); border-bottom: 1px solid var(--m200); display: flex; align-items: center; gap: 16px; padding: 0 16px; }
+  .dots { display: flex; gap: 7px; }
+  .dots i { width: 11px; height: 11px; border-radius: 50%; background: var(--m300); display: block; }
+  .url { flex: 1; max-width: 520px; margin: 0 auto; height: 28px; border-radius: 8px; background: var(--m100); border: 1px solid var(--m200); font-size: 12.5px; color: var(--m500); display: flex; align-items: center; justify-content: center; }
+  .url b { color: var(--m950); font-weight: 600; }
+
+  /* Site */
+  .site { background: var(--m100); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 48px; }
+  nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .logo { font-family: var(--display); font-size: 22px; color: var(--r700); }
+  nav ul { display: flex; gap: 28px; list-style: none; font-size: 14px; color: var(--m700); font-weight: 500; }
+  .nav-cta { font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: 999px; background: var(--m950); color: var(--m50); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; padding: 13px 22px; border-radius: 999px; background: var(--m950); color: var(--m50); white-space: nowrap; }
+  .btn.rose { background: var(--r600); }
+  .btn.ghost { background: transparent; color: var(--m950); border: 1px solid var(--m300); }
+  .eyebrow { font-family: var(--display); font-size: 22px; color: var(--r700); }
+  .kicker { font-size: 13px; font-weight: 700; color: var(--r700); }
+  h1 { font-family: var(--display); font-weight: 400; font-size: 54px; line-height: 1.04; letter-spacing: -0.025em; }
+  h2.sec { font-family: var(--display); font-weight: 400; font-size: 36px; line-height: 1.1; letter-spacing: -0.02em; margin-top: 8px; }
+  .lead { font-size: 17px; line-height: 1.6; color: var(--m700); }
+  .body { font-size: 14px; line-height: 1.65; color: var(--m700); }
+  .fine { font-size: 12px; line-height: 1.5; color: var(--m500); }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; padding: 48px 0 72px; }
+  .signup { margin-top: 30px; display: flex; gap: 10px; background: var(--m50); border: 1px solid var(--m300); border-radius: 999px; padding: 6px 6px 6px 22px; max-width: 470px; align-items: center; }
+  .signup .flag { font-size: 14px; font-weight: 600; color: var(--m700); padding-right: 12px; border-right: 1px solid var(--m200); }
+  .signup .ph { flex: 1; font-size: 15px; color: var(--m400); }
+  .consent { margin-top: 12px; max-width: 470px; }
+  .alt { margin-top: 22px; font-size: 14px; color: var(--m700); }
+  .alt a { color: var(--r700); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--r200); }
+  .channels { margin-top: 28px; display: flex; gap: 10px; }
+  .channels span { font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--m300); color: var(--m700); background: var(--m50); }
+
+  /* Phone */
+  .phone { width: 300px; height: 600px; border-radius: 44px; background: var(--m950); padding: 10px; margin: 0 auto; position: relative; }
+  .screen { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; background: oklch(100% 0 0); display: flex; flex-direction: column; position: relative; }
+  .island { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 86px; height: 24px; background: var(--m950); border-radius: 20px; }
+  .status { height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 0 24px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .thread-top { text-align: center; padding: 2px 0 10px; border-bottom: 1px solid var(--m200); }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; margin: 0 auto 3px; display: grid; place-items: center; font-family: var(--display); font-size: 17px; background: var(--r100); color: var(--r700); }
+  .thread-top p { font-size: 11.5px; font-weight: 600; }
+  .bubbles { padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; flex: 1; overflow: hidden; }
+  .bub { max-width: 80%; font-size: 13px; line-height: 1.38; padding: 8px 12px; border-radius: 17px; }
+  .bub.ai { align-self: flex-start; background: var(--m200); }
+  .bub.me { align-self: flex-end; background: var(--me); color: white; }
+  .linkc { align-self: flex-start; width: 80%; border-radius: 17px; overflow: hidden; border: 1px solid var(--m200); }
+  .linkc .art { height: 54px; background: var(--r100); display: grid; place-items: center; font-family: var(--display); font-size: 17px; color: var(--r700); }
+  .linkc .meta { padding: 7px 11px; background: var(--m100); font-size: 11.5px; color: var(--m500); }
+  .linkc .meta b { display: block; font-size: 12.5px; color: var(--m950); }
+  .compose { margin: 0 12px 14px; border: 1px solid var(--m200); border-radius: 999px; padding: 8px 14px; font-size: 12px; color: var(--m400); }
+
+  /* How it works */
+  .how { padding: 72px 0; border-top: 1px solid var(--m200); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 40px; }
+  .step .tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .tag.text { background: var(--m950); color: var(--m50); }
+  .tag.scr { background: var(--r100); color: var(--r700); border: 1px solid var(--r200); }
+  .step h3 { font-family: var(--display); font-weight: 400; font-size: 23px; margin: 14px 0 8px; }
+  .quote { margin-top: 14px; font-size: 13px; line-height: 1.45; padding: 9px 13px; border-radius: 16px; background: var(--m200); display: inline-block; max-width: 92%; }
+  .quote.me { background: var(--me); color: white; }
+
+  /* Feature band */
+  .band { background: var(--r50); border: 1px solid var(--r200); border-radius: 28px; padding: 44px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .list { list-style: none; margin-top: 18px; }
+  .list li { font-size: 14.5px; padding: 11px 0; border-bottom: 1px solid var(--r200); display: flex; justify-content: space-between; gap: 16px; }
+  .list li:last-child { border-bottom: 0; }
+  .list li span { color: var(--m500); font-size: 13px; }
+
+  /* Pricing */
+  .pricing { padding: 72px 0; }
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 36px; max-width: 820px; }
+  .tier { border: 1px solid var(--m300); border-radius: 22px; padding: 28px; background: var(--m50); }
+  .tier.pro { border-color: var(--r600); }
+  .tier .name { font-weight: 700; font-size: 15px; }
+  .tier .price { font-family: var(--display); font-size: 38px; margin-top: 8px; }
+  .tier .price small { font-family: var(--sans); font-size: 14px; color: var(--m500); }
+  .tier ul { list-style: none; margin: 18px 0 22px; }
+  .tier li { font-size: 14px; color: var(--m700); padding: 6px 0; }
+  .tier li::before { content: '—'; color: var(--r600); margin-right: 10px; }
+
+  .cta { text-align: center; padding: 64px 0 72px; border-top: 1px solid var(--m200); }
+  footer { border-top: 1px solid var(--m200); padding: 26px 0 34px; display: flex; justify-content: space-between; }
+  footer ul { display: flex; gap: 22px; list-style: none; font-size: 13px; color: var(--m500); }
+
+  /* Check your phone */
+  .confirm { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; padding: 56px 0 72px; }
+  .checks { margin-top: 26px; }
+  .checks div { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--m200); font-size: 14.5px; }
+  .checks div:last-child { border-bottom: 0; }
+  .checks .b { width: 24px; height: 24px; border-radius: 50%; background: var(--r100); color: var(--r700); font-weight: 700; font-size: 12px; display: grid; place-items: center; flex-shrink: 0; }
+  .checks span { display: block; color: var(--m500); font-size: 13px; margin-top: 2px; }
+
+  /* Plan page */
+  .plan { display: grid; grid-template-columns: 1fr 1.05fr; gap: 48px; padding: 36px 0 64px; }
+  .meta-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .pill { font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--m50); border: 1px solid var(--m200); color: var(--m700); }
+  .timeline { margin-top: 30px; }
+  .stopc { display: grid; grid-template-columns: 64px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--m200); }
+  .stopc .t { font-family: var(--display); font-size: 20px; color: var(--r700); }
+  .stopc h4 { font-size: 16px; font-weight: 600; }
+  .stopc .d { font-size: 13px; color: var(--m500); margin-top: 3px; }
+  .stopc .tip { font-size: 13.5px; color: var(--m700); margin-top: 8px; line-height: 1.5; }
+  .stopc .acts { display: flex; gap: 14px; margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--r700); }
+  .side { display: flex; flex-direction: column; gap: 18px; }
+  .bigmap { height: 330px; border-radius: 22px; overflow: hidden; background: var(--m200); border: 1px solid var(--m300); }
+  .bigmap svg { width: 100%; height: 100%; display: block; }
+  .panel { border: 1px solid var(--m200); border-radius: 20px; background: var(--m50); padding: 20px 22px; }
+  .panel h5 { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--m500); margin-bottom: 10px; }
+  .panel p { font-size: 14px; line-height: 1.55; color: var(--m700); }
+  .panel p + p { margin-top: 8px; }
+  .textback { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--m950); color: var(--m50); border-radius: 20px; padding: 18px 22px; }
+  .textback p { font-size: 14px; line-height: 1.45; }
+  .textback p span { display: block; color: var(--m300); font-size: 12.5px; }
+  .textback .btn { background: var(--m50); color: var(--m950); padding: 10px 16px; font-size: 13.5px; }
+
+  .notes { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; padding-top: 26px; border-top: 1px solid var(--m300); }
+  .notes h3 { font-family: var(--display); font-weight: 400; font-size: 20px; margin-bottom: 8px; }
+  .notes p, .notes li { font-size: 14px; line-height: 1.6; color: var(--m700); }
+  .notes ul { padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ 1. LANDING ============ -->
+  <div class="frame-label"><span class="n">1</span><h2>Landing page</h2><p>Entering your number is the main action. The quiz is still there for people who'd rather tap.</p></div>
+  <div class="browser">
+    <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>betterdate.app</b></div></div>
+    <div class="site">
+      <div class="wrap">
+        <nav>
+          <span class="logo">Better Date</span>
+          <ul><li>How it works</li><li>Pricing</li><li>Blog</li><li>About</li></ul>
+          <span class="nav-cta">Text us</span>
+        </nav>
+
+        <section class="hero">
+          <div>
+            <p class="eyebrow">Better Date</p>
+            <h1 style="margin-top:12px">Plan your date<br>by text.</h1>
+            <p class="lead" style="margin-top:20px;max-width:500px">Text us the vibe. We'll send back a plan with real places near you both, remind you to book, and check in after. No app to download.</p>
+            <div class="signup">
+              <span class="flag">+1</span>
+              <span class="ph">Your phone number</span>
+              <span class="btn rose">Text me</span>
+            </div>
+            <p class="consent fine">By tapping "Text me" you agree to get messages from Better Date about your plans. Up to 10 msgs/week. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</p>
+            <p class="alt">Prefer tapping? <a>Take the 2-minute quiz</a></p>
+            <div class="channels"><span>SMS</span><span>WhatsApp</span></div>
+          </div>
+          <div>
+            <div class="phone"><div class="screen">
+              <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+              <div class="thread-top"><div class="avatar">B</div><p>Better Date</p></div>
+              <div class="bubbles">
+                <div class="bub ai">Hey! I'm Better Date. Who's the date with, someone new or someone you've been seeing?</div>
+                <div class="bub me">first date friday 😅</div>
+                <div class="bub ai">Love it. Where are you each coming from?</div>
+                <div class="bub me">Orleans, she's in the Glebe</div>
+                <div class="bub ai">Halfway it is. Cozy or something more fun?</div>
+                <div class="bub me">cozy, she loves sushi</div>
+                <div class="linkc"><div class="art">Better Date</div><div class="meta"><b>Sushi & a slow walk, Fri 7 PM</b>3 stops near Elgin St</div></div>
+              </div>
+              <div class="compose">Text message</div>
+            </div></div>
+          </div>
+        </section>
+
+        <section class="how">
+          <p class="kicker">How it works</p>
+          <h2 class="sec">Talk it through. See the plan. Show up ready.</h2>
+          <div class="steps">
+            <div class="step">
+              <span class="tag text">Text</span>
+              <h3>1. Tell us the vibe</h3>
+              <p class="body">Who it's with, where you're both coming from, budget, and what to avoid. Just reply like you'd text a friend.</p>
+              <p class="quote me">cozy, not too loud, under $80</p>
+            </div>
+            <div class="step">
+              <span class="tag scr">Screen</span>
+              <h3>2. Get a plan you can see</h3>
+              <p class="body">We text you a link to your plan: real places from Google Maps, a route, timing, conversation starters, and a backup idea.</p>
+              <p class="quote">Here's your Friday plan → betterdate.app/p/k7x2</p>
+            </div>
+            <div class="step">
+              <span class="tag text">Text</span>
+              <h3>3. We keep you on track</h3>
+              <p class="body">A reminder to book, a heads-up the day of, and a check-in after. When it goes well, we'll help you plan date two.</p>
+              <p class="quote">Tonight's the night. Meet at Sushi Kaze at 7.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="band">
+          <div>
+            <p class="kicker">Meet in the middle</p>
+            <h2 class="sec" style="font-size:30px">Fair for both of you, without the "where should we go?" back-and-forth.</h2>
+            <p class="body" style="margin-top:14px">Tell us where you're each coming from. We'll pick spots roughly halfway, near one of you, or in a neighborhood you choose.</p>
+          </div>
+          <div>
+            <ul class="list">
+              <li>Halfway <span>Same travel time for both</span></li>
+              <li>Near me <span>You're hosting</span></li>
+              <li>Near them <span>Make it easy for them</span></li>
+              <li>A neighborhood <span>Somewhere you both like</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="pricing">
+          <p class="kicker">Pricing</p>
+          <h2 class="sec">Start free. Upgrade when you're dating a lot.</h2>
+          <div class="tiers">
+            <div class="tier">
+              <p class="name">Free</p>
+              <p class="price">$0</p>
+              <ul><li>1 date plan a week</li><li>Booking and day-of reminders</li><li>Nothing saved after the date</li></ul>
+              <span class="btn ghost">Text us</span>
+            </div>
+            <div class="tier pro">
+              <p class="name">Pro</p>
+              <p class="price">$7<small> /month</small></p>
+              <ul><li>Unlimited plans</li><li>Remembers your past dates</li><li>"Last time was sushi, try something new"</li></ul>
+              <span class="btn rose">Go Pro</span>
+            </div>
+          </div>
+          <p class="fine" style="margin-top:14px">Price is a placeholder.</p>
+        </section>
+
+        <section class="cta">
+          <h2 class="sec">A world without bad dates.</h2>
+          <p class="lead" style="margin-top:12px">One text to start. About five minutes to a plan.</p>
+          <div style="margin-top:26px;display:flex;gap:12px;justify-content:center"><span class="btn rose">Text me</span><span class="btn ghost">Take the quiz</span></div>
+        </section>
+
+        <footer>
+          <span class="logo" style="font-size:18px">Better Date</span>
+          <ul><li>Privacy</li><li>Terms</li><li>Messaging policy</li><li>© 2026</li></ul>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 2. CHECK YOUR PHONE ============ -->
+  <div class="frame-label"><span class="n">2</span><h2>After "Text me"</h2><p>The site confirms, and Better Date sends the first text. This is the opt-in that lets it text them.</p></div>
+  <div class="browser">
+    <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>betterdate.app</b>/start</div></div>
+    <div class="site">
+      <div class="wrap">
+        <nav>
+          <span class="logo">Better Date</span>
+          <ul><li>How it works</li><li>Pricing</li><li>Blog</li><li>About</li></ul>
+          <span class="nav-cta">Text us</span>
+        </nav>
+        <section class="confirm">
+          <div>
+            <p class="kicker">You're in</p>
+            <h1 style="font-size:46px;margin-top:10px">Check your phone.</h1>
+            <p class="lead" style="margin-top:16px">We just texted you from <b>(613) 555-0142</b>. Reply to start planning. Save the number so you'll recognize us.</p>
+            <div class="checks">
+              <div><span class="b">1</span><p>Reply to the text<span>Tell us who the date's with and when.</span></p></div>
+              <div><span class="b">2</span><p>Get your plan link<span>Usually under a minute once we know the basics.</span></p></div>
+              <div><span class="b">3</span><p>Book and go<span>We'll remind you. Reply STOP anytime to stop texts.</span></p></div>
+            </div>
+            <p class="alt" style="margin-top:24px">Didn't get it? <a>Resend</a> · <a>Use WhatsApp instead</a></p>
+          </div>
+          <div>
+            <div class="phone"><div class="screen">
+              <div class="island"></div><div class="status"><span>9:41</span><span>5G</span></div>
+              <div class="thread-top"><div class="avatar">B</div><p>Better Date</p></div>
+              <div class="bubbles">
+                <div class="bub ai">Hey, it's Better Date 👋 Thanks for signing up. I'll help you plan dates with real places near you.</div>
+                <div class="bub ai">Who's the date with, someone new or someone you've been seeing? And when?</div>
+                <div class="bub ai" style="font-size:11.5px;color:var(--m500);background:var(--m100)">Up to 10 msgs/week. Reply STOP to cancel, HELP for help.</div>
+              </div>
+              <div class="compose">Text message</div>
+            </div></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 3. PLAN PAGE ============ -->
+  <div class="frame-label"><span class="n">3</span><h2>Plan page</h2><p>What the text link opens. Same plan as today, but saved so the link works on any device.</p></div>
+  <div class="browser">
+    <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>betterdate.app</b>/p/k7x2</div></div>
+    <div class="site">
+      <div class="wrap">
+        <nav>
+          <span class="logo">Better Date</span>
+          <ul><li>How it works</li><li>Pricing</li><li>Blog</li><li>About</li></ul>
+          <span class="nav-cta">Text us</span>
+        </nav>
+        <section class="plan">
+          <div>
+            <p class="kicker">Your date plan</p>
+            <h1 style="font-size:42px;margin-top:8px">Sushi & a slow walk</h1>
+            <p class="lead" style="margin-top:12px">A cozy first date halfway between Orleans and the Glebe. Easy conversation, nothing too loud, and a walk to end on.</p>
+            <div class="meta-row"><span class="pill">Fri, Oct 30 · 7–10 PM</span><span class="pill">$$ · about $70</span><span class="pill">First date</span><span class="pill">Halfway</span></div>
+            <div class="timeline">
+              <div class="stopc"><span class="t">7:00</span><div>
+                <h4>Sushi Kaze</h4><p class="d">Japanese · $$ · 4.7 (812) · 342 Elgin St</p>
+                <p class="tip">Ask for a booth by the window. Quiet enough to talk, and the omakase is easy to share.</p>
+                <div class="acts"><span>Reserve</span><span>Open in Maps</span></div>
+              </div></div>
+              <div class="stopc"><span class="t">8:30</span><div>
+                <h4>Walk along the Rideau Canal</h4><p class="d">10 min walk · lit path</p>
+                <p class="tip">Walking side by side takes the pressure off if conversation slows down.</p>
+                <div class="acts"><span>Open in Maps</span></div>
+              </div></div>
+              <div class="stopc"><span class="t">9:15</span><div>
+                <h4>Little Victories Coffee</h4><p class="d">Café · $ · 4.6 · open till 11</p>
+                <p class="tip">An easy place to end, or to keep going if it's going well.</p>
+                <div class="acts"><span>Open in Maps</span></div>
+              </div></div>
+            </div>
+          </div>
+          <div class="side">
+            <div class="bigmap"><svg viewBox="0 0 500 330" preserveAspectRatio="none">
+              <path d="M0 210 L500 160" stroke="oklch(100% 0 0)" stroke-width="16"/>
+              <path d="M170 0 L230 330" stroke="oklch(100% 0 0)" stroke-width="12"/>
+              <path d="M380 0 L350 330" stroke="oklch(100% 0 0)" stroke-width="10"/>
+              <path d="M0 90 L500 70" stroke="oklch(100% 0 0)" stroke-width="7"/>
+              <path d="M40 300 Q160 250 260 280 T500 240" fill="none" stroke="oklch(82% 0.04 230)" stroke-width="18"/>
+              <path d="M120 120 Q210 110 260 190 T400 250" fill="none" stroke="var(--r600)" stroke-width="4" stroke-dasharray="10 8"/>
+              <circle cx="120" cy="120" r="13" fill="var(--r600)"/><text x="120" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="white" font-family="Figtree">1</text>
+              <circle cx="260" cy="190" r="13" fill="var(--r600)"/><text x="260" y="195" text-anchor="middle" font-size="13" font-weight="700" fill="white" font-family="Figtree">2</text>
+              <circle cx="400" cy="250" r="13" fill="var(--r600)"/><text x="400" y="255" text-anchor="middle" font-size="13" font-weight="700" fill="white" font-family="Figtree">3</text>
+            </svg></div>
+            <div class="panel">
+              <h5>Conversation starters</h5>
+              <p>"What's a trip you're still thinking about?"</p>
+              <p>"What's something you've gotten into recently?"</p>
+            </div>
+            <div class="panel">
+              <h5>Backup idea</h5>
+              <p>If it rains, skip the walk and head to the National Arts Centre café. It's covered and two minutes away.</p>
+            </div>
+            <div style="display:flex;gap:10px"><span class="btn" style="flex:1">Add to calendar</span><span class="btn ghost" style="flex:1">Share with your date</span></div>
+            <div class="textback">
+              <p>Want to change something?<span>Text "make it cheaper" or "swap the café" and we'll update this page.</span></p>
+              <span class="btn">Open messages</span>
+            </div>
+            <p class="fine">Places come from Google Maps. Check hours and reservations before you go.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes">
+    <div>
+      <h3>What changes from today's site</h3>
+      <ul>
+        <li>The hero asks for a phone number instead of linking to the quiz</li>
+        <li>New <code>/start</code> page after signup</li>
+        <li>Plans saved to the database, at <code>/p/[id]</code></li>
+        <li>Pricing page rewritten (replaces the template)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What stays</h3>
+      <ul>
+        <li>The quiz, linked as "Take the 2-minute quiz"</li>
+        <li>The plan layout: stops, Maps links, starters, backup</li>
+        <li>Meet in the middle and the other meeting modes</li>
+        <li>About, blog, SEO pages</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Why the number form matters</h3>
+      <p>When someone types their number and agrees on your site, that counts as opt-in, so Better Date can text them first. The consent line under the form and a messaging policy page are what carriers check when you register for real texting.</p>
+    </div>
+  </section>
+
+</div>
+<script>
+  // Open with #1, #2, or #3 to show a single page (used for PNG exports).
+  const only = location.hash.slice(1)
+  if (only) {
+    document.querySelectorAll('.frame-label').forEach((label, i) => {
+      if (String(i + 1) !== only) { label.style.display = 'none'; label.nextElementSibling.style.display = 'none' }
+      else label.style.marginTop = '0'
+    })
+    document.querySelector('.notes').style.display = 'none'
+    document.body.style.padding = '24px 32px'
+  }
+</script>
+</body>
+</html>

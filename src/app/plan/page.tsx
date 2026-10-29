@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { ButtonLink, SoftButtonLink } from '@/components/elements/button'
 import { Container } from '@/components/elements/container'
+import { DateNumberBanner } from '@/components/elements/dates-planned'
 import { Heading } from '@/components/elements/heading'
 import { SavePreferencesCard } from '@/components/elements/save-preferences-card'
 import { Text } from '@/components/elements/text'
@@ -22,6 +23,7 @@ const categoryLabels: Record<DatePlan['stops'][number]['category'], string> = {
 
 export default function PlanPage() {
   const [plan, setPlan] = useState<DatePlan | null>(null)
+  const [dateNumber, setDateNumber] = useState<number | null>(null)
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -34,6 +36,10 @@ export default function PlanPage() {
       const parsed = datePlanSchema.safeParse(JSON.parse(raw))
       if (parsed.success) {
         setPlan(parsed.data)
+      }
+      const storedNumber = Number(sessionStorage.getItem(`${product.planStorageKey}:dateNumber`))
+      if (Number.isInteger(storedNumber) && storedNumber > 0) {
+        setDateNumber(storedNumber)
       }
     } catch {
       // ignore corrupt storage
@@ -75,6 +81,7 @@ export default function PlanPage() {
         <p className="text-sm/7 font-medium text-rose-700 dark:text-rose-300">{product.planEyebrow}</p>
         <Heading className="mt-2 text-4xl/11 sm:text-5xl/12">{plan.title}</Heading>
         <Text className="mt-4">{plan.summary}</Text>
+        {dateNumber != null && <DateNumberBanner n={dateNumber} />}
 
         <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm/7 text-mauve-700 dark:text-mauve-400">
           <span>
