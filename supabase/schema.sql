@@ -65,7 +65,7 @@ create table if not exists public.plan_counters (
 );
 
 alter table public.plan_counters enable row level security;
-
+create table if not exists public.sms_contacts
 drop policy if exists "Anyone can read plan counters" on public.plan_counters;
 create policy "Anyone can read plan counters"
   on public.plan_counters
